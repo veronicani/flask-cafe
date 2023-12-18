@@ -140,13 +140,9 @@ def edit_cafe(cafe_id):
     form = CafeForm(obj=cafe)
 
     if form.validate_on_submit():
+        # NOTE: populate_obj will override db info even if a field is blank
+        # TODO: make it so that the populate_obj will pass in None if empty str
         form.populate_obj(cafe)
-
-        # name = form.name.data
-        # description = form.description.data
-        # url = form.url.data
-        # address = form.address.data
-        # city_code = form.city_code.data
         # image_url = form.image_url.data or None
         db.session.commit()
         flash(f'{cafe.name} edited!')
