@@ -65,8 +65,6 @@ def homepage():
 
 #######################################
 # cafes
-def get_choices_vocab():
-    """Dynamically create a list of choices with (val, Name)"""
 
 @app.get('/cafes')
 def cafe_list():
@@ -101,8 +99,7 @@ def add_cafe():
 
     form = CafeForm()
 
-    form.city_code.choices = [(c.code, c.name)
-                              for c in City.query.order_by('name')]
+    form.city_code.choices = City.get_choices_cities()
 
     if form.validate_on_submit():
         # name = form.name.data
@@ -142,9 +139,8 @@ def edit_cafe(cafe_id):
     """
     cafe = Cafe.query.get_or_404(cafe_id)
     form = CafeForm(obj=cafe)
-    # TODO: think of where to put this function for reuse, cannot be global const
-    form.city_code.choices = [(c.code, c.name)
-                              for c in City.query.order_by('name')]
+
+    form.city_code.choices = City.get_choices_cities()
 
     if form.validate_on_submit():
         # NOTE: populate_obj will override db info even if a field is blank

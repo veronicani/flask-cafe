@@ -31,6 +31,14 @@ class City(db.Model):
         nullable=False,
     )
 
+    @classmethod
+    def get_choices_cities(self):
+        """Create a list of city choices, with each choice as a
+        (code, label) tuple.
+            E.g. [('berk', 'Berkley'), ('oak', 'Oakland'), ...]
+        """
+        return [(c.code, c.name) for c in self.query.order_by('name')]
+
 
 class Cafe(db.Model):
     """Cafe information."""
@@ -86,6 +94,7 @@ class Cafe(db.Model):
 
         city = self.city
         return f'{city.name}, {city.state}'
+    
 
 
 def connect_db(app):
