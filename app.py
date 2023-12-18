@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, url_for, redirect, flash
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, Cafe
+from models import db, connect_db, Cafe, City
 from forms import CafeForm
 
 load_dotenv()
@@ -99,6 +99,8 @@ def add_cafe():
     """
 
     form = CafeForm()
+    cities = [(c.code, c.name) for c in City.query.all()]
+    form.city_code.choices = cities
 
     if form.validate_on_submit():
         # name = form.name.data
@@ -138,6 +140,8 @@ def edit_cafe(cafe_id):
     """
     cafe = Cafe.query.get_or_404(cafe_id)
     form = CafeForm(obj=cafe)
+    cities = [(c.code, c.name) for c in City.query.all()]
+    form.city_code.choices = cities
 
     if form.validate_on_submit():
         # NOTE: populate_obj will override db info even if a field is blank
