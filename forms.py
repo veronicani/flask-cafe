@@ -33,9 +33,9 @@ class CafeForm(FlaskForm):
         "City",
         # TODO: make this dynamic list of cities from db
         choices=[
-            ("cat", "Cat"),
-            ("dog", "Dog"),
-            ("porcupine", "Porcupine"),
+            ("sf", "San Francisco"),
+            ("berk", "Berkley"),
+            ("oak", "Oakland"),
         ],
     )
 

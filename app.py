@@ -1,17 +1,20 @@
 """Flask App for Flask Cafe."""
 
 import os
+from dotenv import load_dotenv
 
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, redirect, flash
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import connect_db, Cafe
+from models import db, connect_db, Cafe
+from forms import CafeForm
 
+load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["DATABASE_URL"]
-app.config['SECRET_KEY'] = os.environ["SECRET_KEY"]
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_ECHO'] = True
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 
@@ -86,3 +89,71 @@ def cafe_detail(cafe_id):
         'cafe/detail.html',
         cafe=cafe,
     )
+
+
+@app.route('/cafes/add', methods=["GET", "POST"])
+def add_cafe():
+    """ GET: Shows form for adding a cafe.
+    POST: Handle adding a cafe and redirects to new cafe's detail page on
+    success (flash 'CAFENAME added'). Show form again on failure.
+    """
+
+    form = CafeForm()
+
+    if form.validate_on_submit():
+        # name = form.name.data
+        # description = form.description.data
+        # url = form.url.data
+        # address = form.address.data
+        # city_code = form.city_code.data
+        # image_url = form.image_url.data or None
+
+        data = {k: v or None for k, v in form.data.items() if k !=
+                "csrf_token"}
+
+        cafe = Cafe(**data)
+        # cafe = Cafe(name=form.name.data,
+        #             description=form.description.data,
+        #             url=form.url.data,
+        #             address=form.address.data,
+        #             city_code=form.city_code.data,
+        #             image_url=form.image_url.data or None)
+        db.session.add(cafe)
+        db.session.commit()
+
+        flash(f'{cafe.name} added!')
+        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
+    else:
+        return render_template(
+            'cafe/add-form.html',
+            form=form,
+        )
+
+
+@app.route('/cafes/<int:cafe_id>/edit', methods=["GET", "POST"])
+def edit_cafe(cafe_id):
+    """ GET: Shows form for editing a cafe.
+    POST: Handle editing a cafe and redirects to cafe's detail page on
+    success (flash 'CAFENAME edited'). Show form again on failure.
+    """
+    cafe = Cafe.query.get_or_404(cafe_id)
+    form = CafeForm(obj=cafe)
+
+    if form.validate_on_submit():
+        form.populate_obj(cafe)
+
+        # name = form.name.data
+        # description = form.description.data
+        # url = form.url.data
+        # address = form.address.data
+        # city_code = form.city_code.data
+        # image_url = form.image_url.data or None
+        db.session.commit()
+        flash(f'{cafe.name} edited!')
+
+        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
+    else:
+        return render_template(
+            'cafe/add-form.html',
+            form=form,
+        )
