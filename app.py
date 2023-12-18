@@ -19,8 +19,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 
 toolbar = DebugToolbarExtension(app)
-
 connect_db(app)
+print('SQLALCHEMY_DATABASE_URI: ', app.config['SQLALCHEMY_DATABASE_URI'])
 
 #######################################
 # auth & auth routes
@@ -65,7 +65,8 @@ def homepage():
 
 #######################################
 # cafes
-CITY_CODES = [(c.code, c.name) for c in City.query.order_by('name')]
+def get_choices_vocab():
+    """Dynamically create a list of choices with (val, Name)"""
 
 @app.get('/cafes')
 def cafe_list():
@@ -99,7 +100,9 @@ def add_cafe():
     """
 
     form = CafeForm()
-    form.city_code.choices = CITY_CODES
+
+    form.city_code.choices = [(c.code, c.name)
+                              for c in City.query.order_by('name')]
 
     if form.validate_on_submit():
         # name = form.name.data
@@ -139,8 +142,9 @@ def edit_cafe(cafe_id):
     """
     cafe = Cafe.query.get_or_404(cafe_id)
     form = CafeForm(obj=cafe)
-
-    form.city_code.choices = CITY_CODES
+    # TODO: think of where to put this function for reuse, cannot be global const
+    form.city_code.choices = [(c.code, c.name)
+                              for c in City.query.order_by('name')]
 
     if form.validate_on_submit():
         # NOTE: populate_obj will override db info even if a field is blank
@@ -156,3 +160,5 @@ def edit_cafe(cafe_id):
             'cafe/edit-form.html',
             form=form,
         )
+
+# TODO: Tests for CafeAdminViewsTestCase
