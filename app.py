@@ -65,7 +65,7 @@ def homepage():
 
 #######################################
 # cafes
-
+CITY_CODES = [(c.code, c.name) for c in City.query.order_by('name')]
 
 @app.get('/cafes')
 def cafe_list():
@@ -99,8 +99,7 @@ def add_cafe():
     """
 
     form = CafeForm()
-    cities = [(c.code, c.name) for c in City.query.order_by('name')]
-    form.city_code.choices = cities
+    form.city_code.choices = CITY_CODES
 
     if form.validate_on_submit():
         # name = form.name.data
@@ -140,8 +139,8 @@ def edit_cafe(cafe_id):
     """
     cafe = Cafe.query.get_or_404(cafe_id)
     form = CafeForm(obj=cafe)
-    cities = [(c.code, c.name) for c in City.query.order_by('name')]
-    form.city_code.choices = cities
+
+    form.city_code.choices = CITY_CODES
 
     if form.validate_on_submit():
         # NOTE: populate_obj will override db info even if a field is blank
@@ -154,6 +153,6 @@ def edit_cafe(cafe_id):
         return redirect(url_for('cafe_detail', cafe_id=cafe.id))
     else:
         return render_template(
-            'cafe/add-form.html',
+            'cafe/edit-form.html',
             form=form,
         )
