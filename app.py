@@ -99,7 +99,7 @@ def add_cafe():
     """
 
     form = CafeForm()
-    cities = [(c.code, c.name) for c in City.query.all()]
+    cities = [(c.code, c.name) for c in City.query.order_by('name')]
     form.city_code.choices = cities
 
     if form.validate_on_submit():
@@ -140,7 +140,7 @@ def edit_cafe(cafe_id):
     """
     cafe = Cafe.query.get_or_404(cafe_id)
     form = CafeForm(obj=cafe)
-    cities = [(c.code, c.name) for c in City.query.all()]
+    cities = [(c.code, c.name) for c in City.query.order_by('name')]
     form.city_code.choices = cities
 
     if form.validate_on_submit():
