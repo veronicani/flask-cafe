@@ -8,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
+DEFAULT_IMAGE_URL = "/static/images/default-cafe.jpg"
+
 
 class City(db.Model):
     """Cities for cafes."""
@@ -48,11 +50,13 @@ class Cafe(db.Model):
     description = db.Column(
         db.Text,
         nullable=False,
+        default='',
     )
 
     url = db.Column(
         db.Text,
         nullable=False,
+        default='',
     )
 
     address = db.Column(
@@ -69,7 +73,7 @@ class Cafe(db.Model):
     image_url = db.Column(
         db.Text,
         nullable=False,
-        default="/static/images/default-cafe.jpg",
+        default=DEFAULT_IMAGE_URL,
     )
 
     city = db.relationship("City", backref='cafes')
