@@ -31,12 +31,6 @@ class CafeForm(FlaskForm):
 
     city_code = SelectField(
         "City",
-        # TODO: make this dynamic list of cities from db
-        choices=[
-            ("sf", "San Francisco"),
-            ("berk", "Berkley"),
-            ("oak", "Oakland"),
-        ],
     )
 
     image_url = StringField(
