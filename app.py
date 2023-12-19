@@ -3,11 +3,12 @@
 import os
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, url_for, redirect, flash
+from flask import Flask, render_template, url_for, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
+from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, Cafe, City
-from forms import CafeForm
+from models import db, connect_db, Cafe, City, User
+from forms import CafeForm, SignupForm, LoginForm
 
 load_dotenv()
 
@@ -158,4 +159,43 @@ def edit_cafe(cafe_id):
             cafe=cafe,
         )
 
-# TODO: Tests for CafeAdminViewsTestCase
+#######################################
+# users
+
+
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    """ GET: Shows registration form.
+    POST: Process registration; if valid, adds user and then log them in. 
+        Redirects to cafe list with flashed message “You are signed up and 
+        logged in.” If invalid, show form again.
+    """
+
+    form = SignupForm()
+    # TODO: no strip whitespace on inputs
+    if form.validate_on_submit():
+
+        user = User.register(username=form.username.data,
+                             first_name=form.first_name.data,
+                             last_name=form.last_name.data,
+                             description=form.description.data or None,
+                             email=form.email.data,
+                             password=form.password.data,
+                             image_url=form.image_url.data or None)
+        
+        try:
+            db.session.commit()
+            session["user_id"] = user.id
+            flash('You are signed up and logged in.')
+            return redirect(url_for('cafe_list'))
+        
+        except IntegrityError:
+            flash("Username already taken", 'danger')
+            return render_template('auth/signup-form.html', form=form)
+    
+    else:
+        return render_template(
+            'auth/signup-form.html',
+            form=form,
+        )
+
