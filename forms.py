@@ -3,7 +3,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, TextAreaField, BooleanField
 # install email_validator if using Email- pip3 install email_validator
-from wtforms.validators import InputRequired, Length, URL, Optional
+from wtforms.validators import InputRequired, Length, URL, Optional, Email
 
 
 class CafeForm(FlaskForm):
@@ -36,4 +36,57 @@ class CafeForm(FlaskForm):
     image_url = StringField(
         "Image",
         validators=[Optional(), URL()],
+    )
+
+
+class SignupForm(FlaskForm):
+    """Form for user signup."""
+
+    username = StringField(
+        "Username",
+        validators=[InputRequired(), Length(min=4, max=20)],
+    )
+    
+    first_name = StringField(
+        "First Name",
+        validators=[InputRequired(), Length(min=1, max=20)],
+    )
+    
+    last_name = StringField(
+        "Last Name",
+        validators=[InputRequired(), Length(min=1, max=20)],
+    )
+
+    description = TextAreaField(
+        "Description",
+        validators=[Optional()],
+    )
+
+    email = StringField(
+        "Email",
+        validators=[InputRequired(), Email()],
+    )
+
+    password = StringField(
+        "Password",
+        validators=[InputRequired(), Length(min=6, max=20)],
+    )
+
+    image_url = StringField(
+        "Image",
+        validators=[Optional(), URL()],
+    )
+
+
+class LoginForm(FlaskForm):
+    """Form for user login."""
+
+    username = StringField(
+        "Username",
+        validators=[InputRequired()],
+    )
+
+    password = StringField(
+        "Password",
+        validators=[InputRequired()],
     )
