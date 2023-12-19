@@ -176,7 +176,7 @@ class User(db.Model):
                    last_name=last_name,
                    description=description,
                    email=email,
-                   image_url=image_url)
+                   image_url=image_url or None)
         
         db.session.add(user)
         return user

@@ -173,19 +173,21 @@ def signup():
 
     form = SignupForm()
     # TODO: no strip whitespace on inputs
-    if form.validate_on_submit():
+    # TODO: the form doesn't have to pass in image_url? TEST_USER no image_url
 
+    if form.validate_on_submit():
+    
         user = User.register(username=form.username.data,
                              first_name=form.first_name.data,
                              last_name=form.last_name.data,
-                             description=form.description.data or None,
+                             description=form.description.data,
                              email=form.email.data,
                              password=form.password.data,
-                             image_url=form.image_url.data or None)
+                             image_url=form.image_url.data)
         
         try:
             db.session.commit()
-            session["user_id"] = user.id
+            session[CURR_USER_KEY] = user.id
             flash('You are signed up and logged in.')
             return redirect(url_for('cafe_list'))
         
