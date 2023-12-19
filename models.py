@@ -152,7 +152,7 @@ class User(db.Model):
     )
 
     def get_full_name(self):
-        return f"{self.first_name.upper()} {self.last_name.upper()}"
+        return f"{self.first_name} {self.last_name}"
 
     @classmethod
     def register(cls,
@@ -176,7 +176,7 @@ class User(db.Model):
                    last_name=last_name,
                    description=description,
                    email=email,
-                   image_url=image_url or None)
+                   image_url=image_url or DEFAULT_USER_IMAGE_URL)
         
         db.session.add(user)
         return user
