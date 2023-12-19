@@ -8,7 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
-DEFAULT_IMAGE_URL = "/static/images/default-cafe.jpg"
+DEFAULT_CAFE_IMAGE_URL = "/static/images/default-cafe.jpg"
+DEFAULT_USER_IMAGE_URL = "/static/images/default-pic.png"
 
 
 class City(db.Model):
@@ -32,12 +33,12 @@ class City(db.Model):
     )
 
     @classmethod
-    def get_choices_cities(self):
+    def get_choices_cities(cls):
         """Create a list of city choices, with each choice as a
         (code, label) tuple.
             E.g. [('berk', 'Berkley'), ('oak', 'Oakland'), ...]
         """
-        return [(c.code, c.name) for c in self.query.order_by('name')]
+        return [(c.code, c.name) for c in cls.query.order_by('name')]
 
 
 class Cafe(db.Model):
@@ -81,7 +82,7 @@ class Cafe(db.Model):
     image_url = db.Column(
         db.Text,
         nullable=False,
-        default=DEFAULT_IMAGE_URL,
+        default=DEFAULT_CAFE_IMAGE_URL,
     )
 
     city = db.relationship("City", backref='cafes')
@@ -94,7 +95,89 @@ class Cafe(db.Model):
 
         city = self.city
         return f'{city.name}, {city.state}'
-    
+
+
+class User(db.Model):
+    """User information."""
+
+    __tablename__ = 'users'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    username = db.Column(
+        db.Text,
+        unique=True,
+        nullable=False,
+    )
+
+    admin = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+    )
+
+    email = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    first_name = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    last_name = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=False,
+        default='',
+    )
+
+    image_url = db.Column(
+        db.Text,
+        nullable=False,
+        default=DEFAULT_USER_IMAGE_URL,
+    )
+
+    hashed_password = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    def get_full_name(self):
+        return f"{self.first_name.upper()} {self.last_name.upper()}"
+
+    @classmethod
+    def register(cls, username, pwd):
+        """Register user with hashed password and return user."""
+
+        if len(pwd) < 6:
+            raise ValueError("Too short password")
+
+        hashed = bcrypt.generate_password_hash(pwd).decode('utf8')
+
+        return cls(username=username, password=hashed)
+
+    @classmethod
+    def authenticate(cls, username, pwd):
+        """Validate that user exists & password is correct.
+
+        Return user if valid; else return False.
+        """
+
+        u = cls.query.filter_by(username=username).one_or_none()
+
+        if u and bcrypt.check_password_hash(u.password, pwd):
+            return u
+        else:
+            return False
 
 
 def connect_db(app):
