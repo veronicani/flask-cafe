@@ -174,16 +174,14 @@ def signup():
     form = SignupForm()
     # TODO: no strip whitespace on inputs
     # TODO: the form doesn't have to pass in image_url? TEST_USER no image_url
+    data = {k: v for k, v in form.data.items() if k != "csrf_token"}
+    print("data: ", data)
 
     if form.validate_on_submit():
     
-        user = User.register(username=form.username.data,
-                             first_name=form.first_name.data,
-                             last_name=form.last_name.data,
-                             description=form.description.data,
-                             email=form.email.data,
-                             password=form.password.data,
-                             image_url=form.image_url.data)
+        user = User.register(**data)
+        
+        db.session.add(user)
         
         try:
             db.session.commit()
@@ -200,4 +198,5 @@ def signup():
             'auth/signup-form.html',
             form=form,
         )
+
 

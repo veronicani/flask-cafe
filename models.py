@@ -154,31 +154,48 @@ class User(db.Model):
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-    @classmethod
-    def register(cls,
-                 username,
-                 first_name,
-                 last_name,
-                 description,
-                 email,
-                 password,
-                 image_url):
-        """Register user with hashed password and return user."""
+# TEST_USER_DATA = dict(
+#     username="test",
+#     first_name="Testy",
+#     last_name="MacTest",
+#     description="Test Description.",
+#     email="test@test.com",
+#     password="secret",
+# )
+# {'username': 'test',
+#  'first_name': 'Testy',
+#  'last_name': 'MacTest',
+#  'description': 'Test Description.',
+#  'email': 'test@test.com',
+#  'password': 'secret'}
 
-        if len(password) < 6:
+# user = User.register(**TEST_USER_DATA)
+
+    @classmethod
+    def register(cls, **data):
+        """Register user with hashed password and return user."""
+        print('data: ', data)
+
+        if len(data['password']) < 6:
             raise ValueError("Too short password")
 
-        hashed = bcrypt.generate_password_hash(password).decode('utf8')
+        hashed = bcrypt.generate_password_hash(data['password']).decode('utf8')
 
-        user = cls(username=username,
+        user = cls(username=data['username'],
                    hashed_password=hashed,
-                   first_name=first_name,
-                   last_name=last_name,
-                   description=description,
-                   email=email,
-                   image_url=image_url or DEFAULT_USER_IMAGE_URL)
-        
-        db.session.add(user)
+                   first_name=data['first_name'],
+                   last_name=data['last_name'],
+                   description=data.get('description') or None,
+                   email=data['email'],
+                   # used data.get b/c TEST_USER_DATA does not have 'image_url'
+                   # key -- if there is no 'image_url' key, image_url=None
+                   # if signup user with image_url field blank,
+                   # data.get('image_url') will be '' which is falsy
+                   # then Python will look at the next val, None
+                   # now image_url = None
+                   image_url=data.get('image_url') or None,
+                   )
+
         return user
 
     @classmethod
