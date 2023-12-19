@@ -3,7 +3,7 @@
 import os
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, url_for, redirect, flash, session
+from flask import Flask, render_template, url_for, redirect, flash, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
@@ -30,28 +30,28 @@ CURR_USER_KEY = "curr_user"
 NOT_LOGGED_IN_MSG = "You are not logged in."
 
 
-# @app.before_request
-# def add_user_to_g():
-#     """If we're logged in, add curr user to Flask global."""
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
 
-#     if CURR_USER_KEY in session:
-#         g.user = User.query.get(session[CURR_USER_KEY])
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
 
-#     else:
-#         g.user = None
-
-
-# def do_login(user):
-#     """Log in user."""
-
-#     session[CURR_USER_KEY] = user.id
+    else:
+        g.user = None
 
 
-# def do_logout():
-#     """Logout user."""
+def do_login(user):
+    """Log in user."""
 
-#     if CURR_USER_KEY in session:
-#         del session[CURR_USER_KEY]
+    session[CURR_USER_KEY] = user.id
+
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
 
 
 #######################################
@@ -123,7 +123,7 @@ def add_cafe():
         db.session.add(cafe)
         db.session.commit()
 
-        flash(f'{cafe.name} added!')
+        flash(f'{cafe.name} added!', 'success')
         return redirect(url_for('cafe_detail', cafe_id=cafe.id))
     else:
         return render_template(
@@ -149,7 +149,7 @@ def edit_cafe(cafe_id):
         form.populate_obj(cafe)
         # image_url = form.image_url.data or None
         db.session.commit()
-        flash(f'{cafe.name} edited!')
+        flash(f'{cafe.name} edited!', 'success')
 
         return redirect(url_for('cafe_detail', cafe_id=cafe.id))
     else:
@@ -184,14 +184,14 @@ def signup():
         
         try:
             db.session.commit()
-            session[CURR_USER_KEY] = user.id
-            flash('You are signed up and logged in.')
+            do_login(user)
+            flash('You are signed up and logged in.', 'success')
             return redirect(url_for('cafe_list'))
         
         except IntegrityError:
             db.session.rollback()
-            
-            flash("Username already taken", 'danger')
+
+            flash('Username already taken', 'danger')
             return render_template('auth/signup-form.html', form=form)
     
     else:
@@ -201,3 +201,43 @@ def signup():
         )
 
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """ GET: Show login form.
+    POST: Process login; if valid, logs user in and redirects to cafe list
+        with flashed message “Hello, USERNAME!”. If invalid, show form again.
+    """
+
+    form = LoginForm()
+    username = form.username.data
+    password = form.password.data
+
+    if form.validate_on_submit():
+    
+        user = User.authenticate(username, password)
+        
+        if user:
+            do_login(user)
+            
+            flash(f'Hello, {user.username}', 'success')
+            return redirect(url_for('cafe_list'))
+        
+        else:
+            flash("Invalid credentials", 'danger')
+    
+    return render_template(
+        'auth/login-form.html',
+        form=form,
+    )
+
+
+@app.post('/logout')
+def logout():
+    """ Process logout. Redirects to homepage with flashed message
+        “You should have successfully logged out.”
+    """
+
+    do_logout()
+
+    flash("You should have successfully logged out.", 'success')
+    return redirect(url_for('homepage'))

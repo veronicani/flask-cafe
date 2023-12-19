@@ -37,11 +37,11 @@ def debug_html(response, label="DEBUGGING"):  # pragma: no cover
     print("\n\n")
 
 
-# def login_for_test(client, user_id):
-#     """Log in this user."""
+def login_for_test(client, user_id):
+    """Log in this user."""
 
-#     with client.session_transaction() as sess:
-#         sess[CURR_USER_KEY] = user_id
+    with client.session_transaction() as sess:
+        sess[CURR_USER_KEY] = user_id
 
 
 #######################################
@@ -402,35 +402,35 @@ class AuthViewsTestCase(TestCase):
 
             self.assertIn(b"Username already taken", resp.data)
 
-#     def test_login(self):
-#         with app.test_client() as client:
-#             resp = client.get("/login")
-#             self.assertIn(b'Welcome Back!', resp.data)
+    def test_login(self):
+        with app.test_client() as client:
+            resp = client.get("/login")
+            self.assertIn(b'Welcome Back!', resp.data)
 
-#             resp = client.post(
-#                 "/login",
-#                 data={"username": "test", "password": "WRONG"},
-#                 follow_redirects=True,
-#             )
+            resp = client.post(
+                "/login",
+                data={"username": "test", "password": "WRONG"},
+                follow_redirects=True,
+            )
 
-#             self.assertIn(b"Invalid credentials", resp.data)
+            self.assertIn(b"Invalid credentials", resp.data)
 
-#             resp = client.post(
-#                 "/login",
-#                 data={"username": "test", "password": "secret"},
-#                 follow_redirects=True,
-#             )
+            resp = client.post(
+                "/login",
+                data={"username": "test", "password": "secret"},
+                follow_redirects=True,
+            )
 
-#             self.assertIn(b"Hello, test", resp.data)
-#             self.assertEqual(session.get(CURR_USER_KEY), self.user_id)
+            self.assertIn(b"Hello, test", resp.data)
+            self.assertEqual(session.get(CURR_USER_KEY), self.user_id)
 
-#     def test_logout(self):
-#         with app.test_client() as client:
-#             login_for_test(client, self.user_id)
-#             resp = client.post("/logout", follow_redirects=True)
+    def test_logout(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+            resp = client.post("/logout", follow_redirects=True)
 
-#             self.assertIn(b"successfully logged out", resp.data)
-#             self.assertEqual(session.get(CURR_USER_KEY), None)
+            self.assertIn(b"successfully logged out", resp.data)
+            self.assertEqual(session.get(CURR_USER_KEY), None)
 
 
 # class NavBarTestCase(TestCase):
