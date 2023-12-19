@@ -173,7 +173,6 @@ def signup():
 
     form = SignupForm()
     # TODO: no strip whitespace on inputs
-    # TODO: the form doesn't have to pass in image_url? TEST_USER no image_url
     data = {k: v for k, v in form.data.items() if k != "csrf_token"}
     print("data: ", data)
 
@@ -190,6 +189,8 @@ def signup():
             return redirect(url_for('cafe_list'))
         
         except IntegrityError:
+            db.session.rollback()
+            
             flash("Username already taken", 'danger')
             return render_template('auth/signup-form.html', form=form)
     

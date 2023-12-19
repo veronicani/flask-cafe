@@ -10,6 +10,7 @@ db = SQLAlchemy()
 
 DEFAULT_CAFE_IMAGE_URL = "/static/images/default-cafe.jpg"
 DEFAULT_USER_IMAGE_URL = "/static/images/default-pic.png"
+BCRYPT_WORK_FACTOR = 9
 
 
 class City(db.Model):
@@ -179,7 +180,8 @@ class User(db.Model):
         if len(data['password']) < 6:
             raise ValueError("Too short password")
 
-        hashed = bcrypt.generate_password_hash(data['password']).decode('utf8')
+        hashed = bcrypt.generate_password_hash(
+            data['password'], BCRYPT_WORK_FACTOR).decode('utf8')
 
         user = cls(username=data['username'],
                    hashed_password=hashed,
