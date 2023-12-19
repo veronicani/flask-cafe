@@ -90,3 +90,7 @@ class LoginForm(FlaskForm):
         "Password",
         validators=[InputRequired()],
     )
+
+
+class CSRFProtectForm(FlaskForm):
+    """Form just for CSRF Protection."""

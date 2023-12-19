@@ -8,7 +8,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, Cafe, City, User
-from forms import CafeForm, SignupForm, LoginForm
+from forms import CafeForm, SignupForm, LoginForm, CSRFProtectForm
 
 load_dotenv()
 
@@ -39,6 +39,13 @@ def add_user_to_g():
 
     else:
         g.user = None
+
+
+@app.before_request
+def add_csrf_to_g():
+    """Add CSRF form to Flask global."""
+
+    g.form = CSRFProtectForm()
 
 
 def do_login(user):
@@ -171,29 +178,32 @@ def signup():
         logged in.” If invalid, show form again.
     """
 
+    do_logout()
+
     form = SignupForm()
     # TODO: no strip whitespace on inputs
     data = {k: v for k, v in form.data.items() if k != "csrf_token"}
-    print("data: ", data)
 
     if form.validate_on_submit():
-    
+
         user = User.register(**data)
-        
+
         db.session.add(user)
-        
+
         try:
             db.session.commit()
-            do_login(user)
-            flash('You are signed up and logged in.', 'success')
-            return redirect(url_for('cafe_list'))
-        
+
         except IntegrityError:
             db.session.rollback()
 
             flash('Username already taken', 'danger')
             return render_template('auth/signup-form.html', form=form)
-    
+
+        do_login(user)
+        add_user_to_g()
+        flash('You are signed up and logged in.', 'success')
+        return redirect(url_for('cafe_list'))
+
     else:
         return render_template(
             'auth/signup-form.html',
@@ -213,18 +223,18 @@ def login():
     password = form.password.data
 
     if form.validate_on_submit():
-    
+
         user = User.authenticate(username, password)
-        
+
         if user:
             do_login(user)
-            
+
             flash(f'Hello, {user.username}', 'success')
             return redirect(url_for('cafe_list'))
-        
+
         else:
             flash("Invalid credentials", 'danger')
-    
+
     return render_template(
         'auth/login-form.html',
         form=form,
