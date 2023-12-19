@@ -64,7 +64,7 @@ class SignupForm(FlaskForm):
 
     email = StringField(
         "Email",
-        validators=[InputRequired(), Email()],
+        validators=[InputRequired(), Email(), Length(max=50)],
     )
 
     password = StringField(
@@ -74,7 +74,7 @@ class SignupForm(FlaskForm):
 
     image_url = StringField(
         "Image",
-        validators=[Optional(), URL()],
+        validators=[Optional(), URL(), Length(max=255)],
     )
 
 

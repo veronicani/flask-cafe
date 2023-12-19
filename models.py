@@ -155,15 +155,31 @@ class User(db.Model):
         return f"{self.first_name.upper()} {self.last_name.upper()}"
 
     @classmethod
-    def register(cls, username, pwd):
+    def register(cls,
+                 username,
+                 first_name,
+                 last_name,
+                 description,
+                 email,
+                 password,
+                 image_url):
         """Register user with hashed password and return user."""
 
-        if len(pwd) < 6:
+        if len(password) < 6:
             raise ValueError("Too short password")
 
-        hashed = bcrypt.generate_password_hash(pwd).decode('utf8')
+        hashed = bcrypt.generate_password_hash(password).decode('utf8')
 
-        return cls(username=username, password=hashed)
+        user = cls(username=username,
+                   hashed_password=hashed,
+                   first_name=first_name,
+                   last_name=last_name,
+                   description=description,
+                   email=email,
+                   image_url=image_url)
+        
+        db.session.add(user)
+        return user
 
     @classmethod
     def authenticate(cls, username, pwd):
