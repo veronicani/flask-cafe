@@ -155,6 +155,7 @@ def edit_cafe(cafe_id):
         return render_template(
             'cafe/edit-form.html',
             form=form,
+            cafe=cafe,
         )
 
 # TODO: Tests for CafeAdminViewsTestCase
