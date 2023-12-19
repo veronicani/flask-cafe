@@ -155,23 +155,6 @@ class User(db.Model):
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-# TEST_USER_DATA = dict(
-#     username="test",
-#     first_name="Testy",
-#     last_name="MacTest",
-#     description="Test Description.",
-#     email="test@test.com",
-#     password="secret",
-# )
-# {'username': 'test',
-#  'first_name': 'Testy',
-#  'last_name': 'MacTest',
-#  'description': 'Test Description.',
-#  'email': 'test@test.com',
-#  'password': 'secret'}
-
-# user = User.register(**TEST_USER_DATA)
-
     @classmethod
     def register(cls, **data):
         """Register user with hashed password and return user."""
