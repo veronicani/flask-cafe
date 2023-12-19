@@ -207,7 +207,7 @@ class User(db.Model):
 
         u = cls.query.filter_by(username=username).one_or_none()
 
-        if u and bcrypt.check_password_hash(u.password, pwd):
+        if u and bcrypt.check_password_hash(u.hashed_password, pwd):
             return u
         else:
             return False
