@@ -315,6 +315,8 @@ class CafeAdminViewsTestCase(TestCase):
             r'San Francisco</option></select>')
 
         with app.test_client() as client:
+            login_for_test(client, self.admin_id)
+
             resp = client.get(f"/cafes/add")
             self.assertRegex(resp.data.decode('utf8'), choices_pattern)
 
@@ -348,13 +350,13 @@ class CafeAdminViewsTestCase(TestCase):
                 data=CAFE_DATA_EDIT,
                 follow_redirects=True)
             self.assertIn(b'For administrators only.', resp.data)
-    
+
     def test_admin_edit(self):
         id = self.cafe_id
 
         with app.test_client() as client:
             login_for_test(client, self.admin_id)
-            
+
             resp = client.get(f"/cafes/{id}/edit", follow_redirects=True)
             self.assertIn(b'Edit Test Cafe', resp.data)
 
@@ -368,6 +370,8 @@ class CafeAdminViewsTestCase(TestCase):
         id = self.cafe_id
 
         with app.test_client() as client:
+            login_for_test(client, self.admin_id)
+            
             resp = client.get(f"/cafes/{id}/edit", follow_redirects=True)
             self.assertIn(b'Test description', resp.data)
 
