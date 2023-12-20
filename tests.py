@@ -640,10 +640,12 @@ class LikeViewsTestCase(TestCase):
         with app.test_client() as client:
             login_for_test(client, self.user.id)
             self.user.liked_cafes.append(self.cafe)
+            db.session.commit()
             resp = client.post("/api/like",
                                json={"cafe_id": self.cafe.id})
             data = resp.json
 
             self.assertEqual({"error": "Already in likes."}, data)
             self.assertIsInstance(Cafe.query.one(), Cafe)
+    
     
