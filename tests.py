@@ -677,4 +677,3 @@ class LikeViewsTestCase(TestCase):
 
             self.assertEqual({"error": "Not in your likes."}, data)
             self.assertEqual(self.cafe in self.user.liked_cafes, False)
-    
