@@ -321,10 +321,40 @@ class CafeAdminViewsTestCase(TestCase):
             resp = client.get(f"/cafes/{id}/edit")
             self.assertRegex(resp.data.decode('utf8'), choices_pattern)
 
-    def test_edit(self):
+    def test_anon_edit(self):
         id = self.cafe_id
 
         with app.test_client() as client:
+            resp = client.get(f"/cafes/{id}/edit", follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+
+            resp = client.post(
+                f"/cafes/{id}/edit",
+                data=CAFE_DATA_EDIT,
+                follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+    
+    def test_user_edit(self):
+        id = self.cafe_id
+
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+
+            resp = client.get(f"/cafes/{id}/edit", follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+            resp = client.post(
+                f"/cafes/{id}/edit",
+                data=CAFE_DATA_EDIT,
+                follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+    
+    def test_admin_edit(self):
+        id = self.cafe_id
+
+        with app.test_client() as client:
+            login_for_test(client, self.admin_id)
+            
             resp = client.get(f"/cafes/{id}/edit", follow_redirects=True)
             self.assertIn(b'Edit Test Cafe', resp.data)
 
@@ -702,7 +732,7 @@ class LikeViewsTestCase(TestCase):
 
             self.assertEqual({"unliked": self.cafe.id}, data)
             self.assertEqual(self.cafe in self.user.liked_cafes, False)
-    
+
     def test_logged_in_remove_like_not_liked(self):
         with app.test_client() as client:
             login_for_test(client, self.user.id)
