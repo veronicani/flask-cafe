@@ -3,7 +3,7 @@ console.log("UI.JS");
 /******************************************************************************
  * Global constants
  */
-BASE_API_URL = "http://localhost:5001/api/"
+const BASE_API_URL = "http://localhost:5001/api/"
 /******************************************************************************
  * DOM elements
  */ 
@@ -15,20 +15,31 @@ const $title = $("h1");
  * the page.
  */
 async function handleLikeClick(evt) {
-  console.log("clicked!");
   evt.preventDefault();
   const $evtTarget = $(evt.target);
-  console.log("$evtTarget: ", $evtTarget);
-  cafe_id = $evtTarget.data("cafe-id");
-  console.log("cafe_id: ", cafe_id); 
+  const cafe_id = $evtTarget.data("cafe-id");
   //make request to check to see if the user likes the cafe
-  const params = new URLSearchParams({ "cafe_id": cafe_id })
-  const response = await fetch(`${BASE_API_URL}likes?${params}`,
-    { method: "GET" });
-  resp_data = await response.json();
-  console.log("resp_data: ", resp_data);
   //if false, make request to like cafe
   //if true, make request to unlike cafe
+  const cafeIsLiked = await checkIfCafeIsLiked(cafe_id);
+  if (cafeIsLiked) {
+    console.log('cafe is already liked');
+  } else {
+    console.lof('cafe not liked yet');
+  }
+
+/** cafeIsLiked: Makes API request to check if the current cafe is liked. 
+ *    Accepts: cafe_id (int)
+ *    Returns: true || false
+*/
+  async function checkIfCafeIsLiked(cafe_id) {
+    const params = new URLSearchParams({ "cafe_id": cafe_id })
+    const response = await fetch(`${BASE_API_URL}likes?${params}`,
+    { method: "GET" });
+    const resp_data = await response.json();
+    console.log("resp_data: ", resp_data);
+    return resp_data.likes === true;
+  }
 
   // const response = await fetch(
   //   `${BASE_API_URL}like`,
@@ -41,4 +52,4 @@ async function handleLikeClick(evt) {
   // const data = await response.json();
 }
 
-$title.on("click", handleLikeClick);
+$toggleLikeBtn.on("click", handleLikeClick);
