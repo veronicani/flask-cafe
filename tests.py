@@ -99,15 +99,15 @@ TEST_USER_DATA_NEW = dict(
     image_url="http://new-image.com",
 )
 
-# ADMIN_USER_DATA = dict(
-#     username="admin",
-#     first_name="Addie",
-#     last_name="MacAdmin",
-#     description="Admin Description.",
-#     email="admin@test.com",
-#     password="secret",
-#     admin=True,
-# )
+ADMIN_USER_DATA = dict(
+    username="admin",
+    first_name="Addie",
+    last_name="MacAdmin",
+    description="Admin Description.",
+    email="admin@test.com",
+    password="secret",
+    admin=True,
+)
 
 
 #######################################
@@ -239,6 +239,7 @@ class CafeAdminViewsTestCase(TestCase):
     def setUp(self):
         """Before each test, add sample city, users, and cafes"""
 
+        User.query.delete()
         City.query.delete()
         Cafe.query.delete()
 
@@ -248,19 +249,53 @@ class CafeAdminViewsTestCase(TestCase):
         cafe = Cafe(**CAFE_DATA)
         db.session.add(cafe)
 
+        user = User.register(**TEST_USER_DATA)
+        db.session.add(user)
+
+        admin = User.register(**ADMIN_USER_DATA)
+        db.session.add(admin)
+
         db.session.commit()
 
         self.cafe_id = cafe.id
+        self.user_id = user.id
+        self.admin_id = admin.id
 
     def tearDown(self):
-        """After each test, delete the cities."""
-
+        """After each test, delete the cities, users, and cafes."""
+        
+        User.query.delete()
         Cafe.query.delete()
         City.query.delete()
         db.session.commit()
 
-    def test_add(self):
+    def test_anon_add(self):
         with app.test_client() as client:
+            resp = client.get(f"/cafes/add", follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+
+            resp = client.post(
+                f"/cafes/add",
+                data=CAFE_DATA_EDIT,
+                follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+    
+    def test_user_add(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+            resp = client.get(f"/cafes/add", follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+            resp = client.post(
+                f"/cafes/add",
+                data=CAFE_DATA_EDIT,
+                follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+    def test_admin_add(self):
+        with app.test_client() as client:
+            login_for_test(client, self.admin_id)
+
             resp = client.get(f"/cafes/add")
             self.assertIn(b'Add Cafe', resp.data)
 
