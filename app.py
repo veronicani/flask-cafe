@@ -314,7 +314,7 @@ def edit_profile():
 @app.get('/api/likes')
 def check_if_like():
     """ Determine if the current user likes a cafe.
-        Accepts URL query string: "/api/likes?<cafe_id>"
+        Accepts URL query string: "/api/likes?cafe_id=<cafe_id>"
         Returns JSON: {"likes": true|false}
 
     If not logged in, return JSON: {"error": "Not logged in"}
