@@ -456,8 +456,7 @@ class NavBarTestCase(TestCase):
 
     def test_anon_navbar(self):
         with app.test_client() as client:
-            login_for_test(client, self.user_id)
-            resp = client.post("/logout", follow_redirects=True)
+            resp = client.get("/")
 
             self.assertIn(b"Log In", resp.data)
             self.assertIn(b"Sign Up", resp.data)
@@ -465,50 +464,72 @@ class NavBarTestCase(TestCase):
 
     def test_logged_in_navbar(self):
         with app.test_client() as client:
-            resp = client.get("/login")
-
-            resp = client.post(
-                "/login",
-                data={"username": "test", "password": "secret"},
-                follow_redirects=True,
-            )
+            login_for_test(client, self.user_id)
+            resp = client.get("/")
 
             self.assertIn(b"Log Out", resp.data)
             self.assertIn(b"Testy MacTest", resp.data)
 
 
-# class ProfileViewsTestCase(TestCase):
-#     """Tests for views on user profiles."""
+class ProfileViewsTestCase(TestCase):
+    """Tests for views on user profiles."""
 
-#     def setUp(self):
-#         """Before each test, add sample user."""
+    def setUp(self):
+        """Before each test, add sample user."""
 
-#         User.query.delete()
+        User.query.delete()
 
-#         user = User.register(**TEST_USER_DATA)
-#         db.session.add(user)
+        user = User.register(**TEST_USER_DATA)
+        db.session.add(user)
 
-#         db.session.commit()
+        db.session.commit()
 
-#         self.user_id = user.id
+        self.user_id = user.id
 
-#     def tearDown(self):
-#         """After each test, remove all users."""
+    def tearDown(self):
+        """After each test, remove all users."""
 
-#         User.query.delete()
-#         db.session.commit()
+        User.query.delete()
+        db.session.commit()
 
-#     def test_anon_profile(self):
-#         self.fail("FIXME: write this test")
+    def test_anon_profile(self):
+        with app.test_client() as client:
+            resp = client.get("/profile", follow_redirects=True)
+            
+            self.assertIn(b"You are not logged in.", resp.data)
+            self.assertIn(b'Welcome Back!', resp.data)
 
-#     def test_logged_in_profile(self):
-#         self.fail("FIXME: write this test")
+    def test_logged_in_profile(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+            resp = client.get("/profile")
 
-#     def test_anon_profile_edit(self):
-#         self.fail("FIXME: write this test")
+            self.assertIn(b"Testy MacTest", resp.data)
+            self.assertIn(b"Edit Your Profile", resp.data)
 
-#     def test_logged_in_profile_edit(self):
-#         self.fail("FIXME: write this test")
+    def test_anon_profile_edit(self):
+        with app.test_client() as client:
+            resp = client.get("/profile", follow_redirects=True)
+            
+            self.assertIn(b"You are not logged in.", resp.data)
+            self.assertIn(b'Welcome Back!', resp.data)
+
+    def test_logged_in_profile_edit(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+            resp = client.get("/profile/edit")
+
+            self.assertIn(b"Edit Profile", resp.data)
+            self.assertIn(b"Testy", resp.data)
+            self.assertIn(b"MacTest", resp.data)
+
+            resp = client.post(
+                f"/profile/edit",
+                data=TEST_USER_DATA_EDIT,
+                follow_redirects=True)
+            self.assertIn(b'edited', resp.data)
+            self.assertIn(b'new-description', resp.data)
+            self.assertIn(b'http://new-image.com', resp.data)
 
 
 #######################################
