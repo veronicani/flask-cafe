@@ -15,9 +15,11 @@
     <h1>{{ cafe.name }}</h1>
 
     {% if cafe not in g.user.liked_cafes %}
-      <a class="btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
+      <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" 
+      class="btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
     {% else %}
-      <a class="btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+      <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" 
+      class="btn btn-outline-primary" href="FOR-AJAX">Liked</a>
     {% endif %}
      
     <p class="lead">{{ cafe.description }}</p>
