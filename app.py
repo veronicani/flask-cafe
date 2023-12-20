@@ -158,26 +158,32 @@ def edit_cafe(cafe_id):
 
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
-    cafe = Cafe.query.get_or_404(cafe_id)
-    form = CafeForm(obj=cafe)
 
-    form.city_code.choices = City.get_choices_cities()
+    if g.user:
 
-    if form.validate_on_submit():
-        # NOTE: populate_obj will override db info even if a field is blank
-        # TODO: make it so that the populate_obj will pass in None if empty str
-        form.populate_obj(cafe)
-        # image_url = form.image_url.data or None
-        db.session.commit()
-        flash(f'{cafe.name} edited!', 'success')
+        cafe = Cafe.query.get_or_404(cafe_id)
+        form = CafeForm(obj=cafe)
 
-        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
-    else:
-        return render_template(
-            'cafe/edit-form.html',
-            form=form,
-            cafe=cafe,
-        )
+        form.city_code.choices = City.get_choices_cities()
+
+        if form.validate_on_submit():
+            # NOTE: populate_obj will override db info even if a field is blank
+            # TODO: make it so that the populate_obj will pass in None if empty str
+            form.populate_obj(cafe)
+            # image_url = form.image_url.data or None
+            db.session.commit()
+            flash(f'{cafe.name} edited!', 'success')
+
+            return redirect(url_for('cafe_detail', cafe_id=cafe.id))
+        else:
+            return render_template(
+                'cafe/edit-form.html',
+                form=form,
+                cafe=cafe,
+            )
+
+    flash(NOT_LOGGED_IN_MSG, 'danger')
+    return redirect(url_for('login'))
 
 #######################################
 # user signup/login/logout
