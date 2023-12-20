@@ -1,12 +1,12 @@
 "use strict"
-console.log("UI.JS");
+
 /******************************************************************************
  * Global constants
  */
 const BASE_API_URL = "http://localhost:5001/api/"
 /******************************************************************************
  * DOM elements
- */ 
+ */
 const $toggleLikeBtn = $("#toggle-like-btn");
 const $title = $("h1");
 /******************************************************************************
@@ -24,32 +24,43 @@ async function handleLikeClick(evt) {
   const cafeIsLiked = await checkIfCafeIsLiked(cafe_id);
   if (cafeIsLiked) {
     console.log('cafe is already liked');
+    
   } else {
-    console.lof('cafe not liked yet');
+    console.log('cafe not liked yet');
+    await addLike(cafe_id);
   }
+}
 
-/** cafeIsLiked: Makes API request to check if the current cafe is liked. 
+/** checkIfCafeIsLiked: Makes API request to check if the current cafe is liked. 
  *    Accepts: cafe_id (int)
  *    Returns: true || false
 */
-  async function checkIfCafeIsLiked(cafe_id) {
-    const params = new URLSearchParams({ "cafe_id": cafe_id })
-    const response = await fetch(`${BASE_API_URL}likes?${params}`,
+async function checkIfCafeIsLiked(cafe_id) {
+  const params = new URLSearchParams({ "cafe_id": cafe_id })
+  const response = await fetch(`${BASE_API_URL}likes?${params}`,
     { method: "GET" });
-    const resp_data = await response.json();
-    console.log("resp_data: ", resp_data);
-    return resp_data.likes === true;
-  }
+  const resp_data = await response.json();
+  console.log("resp_data: ", resp_data);
+  return resp_data.likes === true;
+}
 
-  // const response = await fetch(
-  //   `${BASE_API_URL}like`,
-  //   {
-  //       method: "POST",
-  //       body: JSON.stringify({"cafe_id": cafe_id}),
-  //       headers: {
-  //         "Content-Type": "application/json"},
-  //   });
-  // const data = await response.json();
+/** addLike: Makes API request to add the current cafe to the user's likes.
+ *    Accepts: cafe_id (int)
+ *    Returns: JSON {"liked": <cafe_id>}
+ */
+async function addLike(cafe_id) {
+  const response = await fetch(
+    `${BASE_API_URL}like`,
+    {
+      method: "POST",
+      body: JSON.stringify({ "cafe_id": cafe_id }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+  const resp_data = await response.json();
+  console.log("resp_data: ", resp_data);
+  return resp_data;
 }
 
 $toggleLikeBtn.on("click", handleLikeClick);
