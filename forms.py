@@ -1,8 +1,7 @@
 """Forms for Flask Cafe."""
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, TextAreaField, BooleanField
-# install email_validator if using Email- pip3 install email_validator
+from wtforms import StringField, SelectField, TextAreaField
 from wtforms.validators import InputRequired, Length, URL, Optional, Email
 
 
@@ -46,12 +45,12 @@ class SignupForm(FlaskForm):
         "Username",
         validators=[InputRequired(), Length(min=4, max=20)],
     )
-    
+
     first_name = StringField(
         "First Name",
         validators=[InputRequired(), Length(min=1, max=20)],
     )
-    
+
     last_name = StringField(
         "Last Name",
         validators=[InputRequired(), Length(min=1, max=20)],
@@ -89,6 +88,35 @@ class LoginForm(FlaskForm):
     password = StringField(
         "Password",
         validators=[InputRequired()],
+    )
+
+
+class ProfileEditForm(FlaskForm):
+    """Form for editing user profile."""
+
+    first_name = StringField(
+        "First Name",
+        validators=[Optional(), Length(min=1, max=20)],
+    )
+
+    last_name = StringField(
+        "Last Name",
+        validators=[Optional(), Length(min=1, max=20)],
+    )
+
+    description = TextAreaField(
+        "Description",
+        validators=[Optional()],
+    )
+
+    email = StringField(
+        "Email",
+        validators=[Optional(), Email(), Length(max=50)],
+    )
+
+    image_url = StringField(
+        "Image",
+        validators=[Optional(), URL(), Length(max=255)],
     )
 
 

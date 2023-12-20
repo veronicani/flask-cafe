@@ -8,7 +8,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, Cafe, City, User
-from forms import CafeForm, SignupForm, LoginForm, CSRFProtectForm
+from forms import CafeForm, SignupForm, LoginForm, ProfileEditForm, \
+    CSRFProtectForm
 
 load_dotenv()
 
@@ -167,7 +168,7 @@ def edit_cafe(cafe_id):
         )
 
 #######################################
-# users
+# user signup/login/logout
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -251,3 +252,56 @@ def logout():
 
     flash("You should have successfully logged out.", 'success')
     return redirect(url_for('homepage'))
+
+#######################################
+# user profile
+
+
+@app.get('/profile')
+def show_profile():
+    """If logged in, show current user's profile.
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
+    """
+
+    if g.user:
+
+        return render_template(
+            'profile/detail.html',
+        )
+
+    else:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
+
+
+@app.route('/profile/edit', methods=["GET", "POST"])
+def edit_profile():
+    """ GET: Show profile edit form if logged in.
+
+    POST: Process profile edit. If valid, redirects to profile page
+        with flashed message "Profile edited”. If invalid, show form again.
+
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
+    """
+
+    if g.user:
+
+        form = ProfileEditForm(obj=g.user)         
+
+        if form.validate_on_submit():
+
+            form.populate_obj(g.user)
+            db.session.commit()
+
+            flash('Profile edited.', 'success')
+            return redirect(url_for('show_profile'))
+
+        else:
+            return render_template(
+                'profile/edit-form.html',
+                form=form,
+            )
+
+    else:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
