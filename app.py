@@ -108,8 +108,12 @@ def add_cafe():
 
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
-    
-    if g.user.admin:
+
+    if not g.user:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
+
+    elif g.user.admin:
 
         form = CafeForm()
 
@@ -146,13 +150,10 @@ def add_cafe():
                 form=form,
             )
 
-    elif g.user:
+    else:
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_list'))
 
-    else:
-        flash(NOT_LOGGED_IN_MSG, 'danger')
-        return redirect(url_for('login'))
 
 
 @app.route('/cafes/<int:cafe_id>/edit', methods=["GET", "POST"])
@@ -163,8 +164,11 @@ def edit_cafe(cafe_id):
 
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
+    if not g.user:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
 
-    if g.user.admin:
+    elif g.user.admin:
 
         cafe = Cafe.query.get_or_404(cafe_id)
         form = CafeForm(obj=cafe)
@@ -186,14 +190,11 @@ def edit_cafe(cafe_id):
                 form=form,
                 cafe=cafe,
             )
-        
-    elif g.user:
+
+    else:
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
-    else:
-        flash(NOT_LOGGED_IN_MSG, 'danger')
-        return redirect(url_for('login'))
 
 #######################################
 # user signup/login/logout
