@@ -30,7 +30,7 @@ print('SQLALCHEMY_DATABASE_URI: ', app.config['SQLALCHEMY_DATABASE_URI'])
 
 CURR_USER_KEY = "curr_user"
 NOT_LOGGED_IN_MSG = "You are not logged in."
-
+ADMIN_ONLY_MSG = "For administrators only."
 
 @app.before_request
 def add_user_to_g():
@@ -108,8 +108,8 @@ def add_cafe():
 
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
-
-    if g.user:
+    
+    if g.user.admin:
 
         form = CafeForm()
 
@@ -146,8 +146,13 @@ def add_cafe():
                 form=form,
             )
 
-    flash(NOT_LOGGED_IN_MSG, 'danger')
-    return redirect(url_for('login'))
+    elif g.user:
+        flash(ADMIN_ONLY_MSG, 'danger')
+        return redirect(url_for('cafe_list'))
+
+    else:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
 
 
 @app.route('/cafes/<int:cafe_id>/edit', methods=["GET", "POST"])
