@@ -105,40 +105,49 @@ def add_cafe():
     """ GET: Shows form for adding a cafe.
     POST: Handle adding a cafe and redirects to new cafe's detail page on
     success (flash 'CAFENAME added'). Show form again on failure.
+
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
 
-    form = CafeForm()
+    if g.user:
 
-    form.city_code.choices = City.get_choices_cities()
+        form = CafeForm()
 
-    if form.validate_on_submit():
-        # name = form.name.data
-        # description = form.description.data
-        # url = form.url.data
-        # address = form.address.data
-        # city_code = form.city_code.data
-        # image_url = form.image_url.data or None
+        form.city_code.choices = City.get_choices_cities()
 
-        data = {k: v or None for k, v in form.data.items() if k !=
-                "csrf_token"}
+        if form.validate_on_submit():
+            # name = form.name.data
+            # description = form.description.data
+            # url = form.url.data
+            # address = form.address.data
+            # city_code = form.city_code.data
+            # image_url = form.image_url.data or None
 
-        cafe = Cafe(**data)
-        # cafe = Cafe(name=form.name.data,
-        #             description=form.description.data,
-        #             url=form.url.data,
-        #             address=form.address.data,
-        #             city_code=form.city_code.data,
-        #             image_url=form.image_url.data or None)
-        db.session.add(cafe)
-        db.session.commit()
+            data = {k: v or None for k, v in form.data.items() if k !=
+                    "csrf_token"}
 
-        flash(f'{cafe.name} added!', 'success')
-        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
-    else:
-        return render_template(
-            'cafe/add-form.html',
-            form=form,
-        )
+            cafe = Cafe(**data)
+            # cafe = Cafe(name=form.name.data,
+            #             description=form.description.data,
+            #             url=form.url.data,
+            #             address=form.address.data,
+            #             city_code=form.city_code.data,
+            #             image_url=form.image_url.data or None)
+            db.session.add(cafe)
+            db.session.commit()
+
+            flash(f'{cafe.name} added!', 'success')
+            return redirect(url_for('cafe_detail', cafe_id=cafe.id))
+
+        else:
+
+            return render_template(
+                'cafe/add-form.html',
+                form=form,
+            )
+
+    flash(NOT_LOGGED_IN_MSG, 'danger')
+    return redirect(url_for('login'))
 
 
 @app.route('/cafes/<int:cafe_id>/edit', methods=["GET", "POST"])
@@ -146,6 +155,8 @@ def edit_cafe(cafe_id):
     """ GET: Shows form for editing a cafe.
     POST: Handle editing a cafe and redirects to cafe's detail page on
     success (flash 'CAFENAME edited'). Show form again on failure.
+
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
     cafe = Cafe.query.get_or_404(cafe_id)
     form = CafeForm(obj=cafe)
