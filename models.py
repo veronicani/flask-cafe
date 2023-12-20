@@ -185,6 +185,7 @@ class User(db.Model):
                    # then Python will look at the next val, None
                    # now image_url = None
                    image_url=data.get('image_url') or None,
+                   admin=data.get('admin') or None,
                    )
 
         return user
