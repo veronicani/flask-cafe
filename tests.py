@@ -647,5 +647,34 @@ class LikeViewsTestCase(TestCase):
 
             self.assertEqual({"error": "Already in likes."}, data)
             self.assertIsInstance(Cafe.query.one(), Cafe)
+
+    def test_anon_remove_like(self):
+        with app.test_client() as client:
+            resp = client.post("/api/unlike",
+                               json={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"error": "Not logged in"}, data)
+
+    def test_logged_in_remove_like(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            self.user.liked_cafes.append(self.cafe)
+            db.session.commit()
+            resp = client.post("/api/unlike",
+                               json={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"unliked": self.cafe.id}, data)
+            self.assertEqual(self.cafe in self.user.liked_cafes, False)
     
+    def test_logged_in_remove_like_not_liked(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            resp = client.post("/api/unlike",
+                               json={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"error": "Not in your likes."}, data)
+            self.assertEqual(self.cafe in self.user.liked_cafes, False)
     
