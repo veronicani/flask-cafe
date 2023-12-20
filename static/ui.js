@@ -24,10 +24,11 @@ async function handleLikeClick(evt) {
   const cafeIsLiked = await checkIfCafeIsLiked(cafe_id);
   if (cafeIsLiked) {
     console.log('cafe is already liked');
-    
+    $toggleLikeBtn.text("Not Liked");
   } else {
     console.log('cafe not liked yet');
     await addLike(cafe_id);
+    $toggleLikeBtn.text("Liked");
   }
 }
 
