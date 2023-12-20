@@ -204,7 +204,7 @@ class User(db.Model):
             return False
 
 
-class CafeUser(db.Model):
+class Like(db.Model):
     """Cafes liked by users."""
 
     __tablename__ = 'cafes_users'

@@ -10,7 +10,7 @@ from unittest import TestCase
 
 from flask import session
 from app import app, CURR_USER_KEY
-from models import db, Cafe, City, connect_db, User  #, Like
+from models import db, Cafe, City, connect_db, User, Like
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -131,7 +131,7 @@ class CityModelTestCase(TestCase):
     """Tests for City Model."""
 
     def setUp(self):
-        """Before all tests, add sample city & users"""
+        """Before all tests, add sample city & cafes"""
 
         Cafe.query.delete()
         City.query.delete()
@@ -537,6 +537,53 @@ class ProfileViewsTestCase(TestCase):
 
 
 class LikeViewsTestCase(TestCase):
-    """Tests for views on cafes."""
+    """Tests for views on user's cafe likes."""
 
-    # FIXME: add setup/teardown/inidividual tests
+    def setUp(self):
+        """Before each test, add sample user and cafe."""
+
+        Like.query.delete()
+        User.query.delete()
+        Cafe.query.delete()
+        City.query.delete()
+
+        user = User.register(**TEST_USER_DATA)
+        db.session.add(user)
+
+        cafe = Cafe(**CAFE_DATA)
+        db.session.add(cafe)
+
+        city = City(**CITY_DATA)
+        db.session.add(city)
+
+        db.session.commit()
+
+        self.user = user
+        self.cafe = cafe
+
+    def tearDown(self):
+        """After each test, remove all users and cafes."""
+
+        Like.query.delete()
+        User.query.delete()
+        Cafe.query.delete()
+        City.query.delete()
+        db.session.commit()
+
+    def test_profile_no_likes(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            resp = client.get("/profile", follow_redirects=True)
+
+            self.assertIn(b"You have no liked cafes.", resp.data)
+
+    def test_profile_likes(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+
+            self.user.liked_cafes.append(self.cafe)
+            db.session.commit()
+
+            resp = client.get("/profile", follow_redirects=True)
+
+            self.assertIn(b"Test Cafe", resp.data)

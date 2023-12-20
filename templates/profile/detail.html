@@ -17,6 +17,18 @@
 
     <p><b>Username:</b>{{ g.user.username }}</p>
     <p><b>Email:</b>{{ g.user.email }}</p>
+    
+    <h2>Your Liked Cafes</h2>
+    
+    {% if g.user.liked_cafes %}
+      <ul>
+        {% for cafe in g.user.liked_cafes %}
+          <li><a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}">{{ cafe.name }}</a></li>
+          {% endfor %}
+      </ul>
+    {% else %}
+      <p>You have no liked cafes.</p>
+    {% endif %}
 
     <p>
       <a class="btn btn-outline-primary" href="{{ url_for('edit_profile') }}">
