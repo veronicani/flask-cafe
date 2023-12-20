@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 
 from flask import Flask, render_template, url_for, redirect, flash, session, g
+from flask import jsonify, request
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
@@ -305,3 +306,89 @@ def edit_profile():
     else:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
+
+#######################################
+# likes API
+
+
+@app.get('/api/likes')
+def get_likes():
+    """ Determine if the current user likes a cafe.
+        Accepts URL query string: "/api/likes?<cafe_id>"
+        Returns JSON: {"likes": true|false}
+
+    If not logged in, return JSON: {"error": "Not logged in"}
+    """
+    
+    if g.user:
+
+        cafe_id = int(request.args["cafe_id"])
+        user_likes = [cafe.id for cafe in g.user.liked_cafes]
+        likes_cafe = cafe_id in user_likes
+
+        return jsonify({"likes": likes_cafe})
+
+    else:
+
+        return jsonify({"error": "Not logged in"})
+
+
+@app.post('/api/like')
+def add_like():
+    """ Make the current user like a cafe.
+        Accepts JSON: {"cafe_id": <cafe_id (int)>}
+        Returns JSON:
+            If previously not liked: {"liked": <cafe_id (int)>}
+            If already liked: {"error": "Already in likes."}
+    If not logged in, return JSON: {"error": "Not logged in"}
+    """
+
+    if g.user:
+
+        cafe_id = int(request.json["cafe_id"])
+        cafe = Cafe.query.get(cafe_id)
+        g.user.liked_cafes.append(cafe)
+
+        try:
+            db.session.commit()
+
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({"error": "Already in likes."})
+
+        return jsonify({"liked": cafe_id})
+
+    else:
+
+        return jsonify({"error": "Not logged in"})
+
+
+@app.post('/api/unlike')
+def remove_like():
+    """ Make the current user unlike a cafe.
+        Accepts JSON: {"cafe_id": <cafe_id (int)>}
+        Returns JSON:
+            If in user's likes: {"unliked": <cafe_id (int)>}
+            If not in user's likes: {"error": "Not in your likes."}
+
+    If not logged in, return JSON: {"error": "Not logged in"}
+    """
+
+    if g.user:
+
+        cafe_id = int(request.json["cafe_id"])
+        cafe = Cafe.query.get(cafe_id)
+
+        try:
+            g.user.liked_cafes.remove(cafe)
+            db.session.commit()
+
+        except ValueError:
+            db.session.rollback()
+            return jsonify({"error": "Not in your likes."})
+
+        return jsonify({"unliked": cafe_id})
+
+    else:
+
+        return jsonify({"error": "Not logged in"})
