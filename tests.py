@@ -597,11 +597,23 @@ class LikeViewsTestCase(TestCase):
 
             self.assertEqual({"error": "Not logged in"}, data)
 
-    def test_logged_in_check_if_like(self):
+    def test_logged_in_check_if_like_not_liked(self):
         with app.test_client() as client:
             login_for_test(client, self.user.id)
             resp = client.get("/api/likes",
-                              query_string={"cafe_id": 1})
+                              query_string={"cafe_id": self.cafe.id})
             data = resp.json
 
-            self.assertEqual({"likes": ""}, data)
+            self.assertEqual({"likes": False}, data)
+
+    def test_logged_in_check_if_like_is_liked(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            self.user.liked_cafes.append(self.cafe)
+            db.session.commit()
+            
+            resp = client.get("/api/likes",
+                              query_string={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"likes": True}, data)
