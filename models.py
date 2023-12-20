@@ -87,6 +87,9 @@ class Cafe(db.Model):
     )
 
     city = db.relationship("City", backref='cafes')
+    # Backref in Users
+    # liking_users = db.relationship(
+    #    'User', secondary='cafes_users', backref='liked_cafes')
 
     def __repr__(self):
         return f'<Cafe id={self.id} name="{self.name}">'
@@ -152,6 +155,9 @@ class User(db.Model):
         nullable=False,
     )
 
+    liked_cafes = db.relationship(
+        'Cafe', secondary='cafes_users', backref='liking_users')
+
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -196,6 +202,24 @@ class User(db.Model):
             return u
         else:
             return False
+
+
+class CafeUser(db.Model):
+    """Cafes liked by users."""
+
+    __tablename__ = 'cafes_users'
+
+    liked_cafes = db.Column(
+        db.Integer,
+        db.ForeignKey('cafes.id'),
+        primary_key=True,
+    )
+
+    liking_users = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id'),
+        primary_key=True,
+    )
 
 
 def connect_db(app):

@@ -305,3 +305,10 @@ def edit_profile():
     else:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
+
+# TODO: not sure if this actually needs to show on separate pg from profile
+@app.get('/profile/likes')
+def show_likes():
+    """ If logged in, show the list of liked cafes.
+     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
+    """
