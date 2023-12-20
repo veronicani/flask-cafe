@@ -592,7 +592,7 @@ class LikeViewsTestCase(TestCase):
     def test_anon_check_if_like(self):
         with app.test_client() as client:
             resp = client.get("/api/likes",
-                              query_string={"cafe_id": 1})
+                              query_string={"cafe_id": self.cafe.id})
             data = resp.json
 
             self.assertEqual({"error": "Not logged in"}, data)
@@ -611,9 +611,39 @@ class LikeViewsTestCase(TestCase):
             login_for_test(client, self.user.id)
             self.user.liked_cafes.append(self.cafe)
             db.session.commit()
-            
+
             resp = client.get("/api/likes",
                               query_string={"cafe_id": self.cafe.id})
             data = resp.json
 
             self.assertEqual({"likes": True}, data)
+
+    def test_anon_add_like(self):
+        with app.test_client() as client:
+            resp = client.post("/api/like",
+                               json={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"error": "Not logged in"}, data)
+    
+    def test_logged_in_add_like(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            resp = client.post("/api/like",
+                               json={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"liked": self.cafe.id}, data)
+            self.assertEqual(self.cafe in self.user.liked_cafes, True)
+    
+    def test_logged_in_add_like_duplicate(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            self.user.liked_cafes.append(self.cafe)
+            resp = client.post("/api/like",
+                               json={"cafe_id": self.cafe.id})
+            data = resp.json
+
+            self.assertEqual({"error": "Already in likes."}, data)
+            self.assertIsInstance(Cafe.query.one(), Cafe)
+    
