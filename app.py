@@ -164,7 +164,7 @@ def edit_cafe(cafe_id):
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
 
-    if g.user:
+    if g.user.admin:
 
         cafe = Cafe.query.get_or_404(cafe_id)
         form = CafeForm(obj=cafe)
@@ -186,9 +186,14 @@ def edit_cafe(cafe_id):
                 form=form,
                 cafe=cafe,
             )
+        
+    elif g.user:
+        flash(ADMIN_ONLY_MSG, 'danger')
+        return redirect(url_for('cafe_detail'))
 
-    flash(NOT_LOGGED_IN_MSG, 'danger')
-    return redirect(url_for('login'))
+    else:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
 
 #######################################
 # user signup/login/logout
