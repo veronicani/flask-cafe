@@ -73,9 +73,6 @@ async function toggleLike(cafeId, endpoint) {
   return resp_data;
 }
 
-$toggleLikeBtn.on("click", handleLikeClick);
-
-
 /** addLike: Makes API request to add the current cafe to the user's likes.
  *    Accepts: cafe_id (int)
  *    Returns: JSON {"liked": <cafe_id>}
