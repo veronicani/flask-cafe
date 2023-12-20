@@ -589,7 +589,7 @@ class LikeViewsTestCase(TestCase):
             self.assertIn(b"Test Cafe", resp.data)
 
     # Tests for JSON API routes
-    def test_anon_get_likes(self):
+    def test_anon_check_if_like(self):
         with app.test_client() as client:
             resp = client.get("/api/likes",
                               query_string={"cafe_id": 1})
@@ -597,3 +597,11 @@ class LikeViewsTestCase(TestCase):
 
             self.assertEqual({"error": "Not logged in"}, data)
 
+    def test_logged_in_check_if_like(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user.id)
+            resp = client.get("/api/likes",
+                              query_string={"cafe_id": 1})
+            data = resp.json
+
+            self.assertEqual({"likes": ""}, data)
