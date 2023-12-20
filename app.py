@@ -189,7 +189,7 @@ def edit_cafe(cafe_id):
         
     elif g.user:
         flash(ADMIN_ONLY_MSG, 'danger')
-        return redirect(url_for('cafe_detail'))
+        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
 
     else:
         flash(NOT_LOGGED_IN_MSG, 'danger')
