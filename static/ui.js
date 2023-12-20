@@ -24,6 +24,7 @@ async function handleLikeClick(evt) {
   const cafeIsLiked = await checkIfCafeIsLiked(cafe_id);
   if (cafeIsLiked) {
     console.log('cafe is already liked');
+    await removeLike(cafe_id);
     $toggleLikeBtn.text("Not Liked");
   } else {
     console.log('cafe not liked yet');
@@ -52,6 +53,26 @@ async function checkIfCafeIsLiked(cafe_id) {
 async function addLike(cafe_id) {
   const response = await fetch(
     `${BASE_API_URL}like`,
+    {
+      method: "POST",
+      body: JSON.stringify({ "cafe_id": cafe_id }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+  const resp_data = await response.json();
+  console.log("resp_data: ", resp_data);
+  return resp_data;
+}
+
+/** removeLike: Makes API request to remove the current cafe from the user's
+ *  likes.
+ *    Accepts: cafe_id (int)
+ *    Returns: JSON {"unliked": <cafe_id>}
+ */
+async function removeLike(cafe_id) {
+  const response = await fetch(
+    `${BASE_API_URL}unlike`,
     {
       method: "POST",
       body: JSON.stringify({ "cafe_id": cafe_id }),
