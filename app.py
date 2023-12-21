@@ -121,7 +121,7 @@ def add_cafe():
 
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
-    # TODO: refactor - move not g.user.admin above g.user.admin to remove nested else
+
     if not g.user:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
@@ -180,7 +180,7 @@ def edit_cafe(cafe_id):
     if not g.user:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
-    # TODO: refactor - move not g.user.admin above g.user.admin to remove nested else
+
     elif g.user.admin:
 
         cafe = Cafe.query.get_or_404(cafe_id)
@@ -190,9 +190,8 @@ def edit_cafe(cafe_id):
 
         if form.validate_on_submit():
             # NOTE: populate_obj will override db info even if a field is blank
-            # TODO: make it so that the populate_obj will pass in None if empty str
+            # does not do image_url = form.image_url.data or None
             form.populate_obj(cafe)
-            # image_url = form.image_url.data or None
             db.session.commit()
             flash(f'{cafe.name} edited!', 'success')
 
@@ -231,7 +230,7 @@ def signup():
 
     form = SignupForm()
     data = {k: v or None for k, v in form.data.items() if k != "csrf_token"}
-    
+
     # TODO: does not strip whitespace on inputs when validating
     if form.validate_on_submit():
 
@@ -257,8 +256,9 @@ def signup():
             return render_template('auth/signup-form.html', form=form)
 
         do_login(user)
-        # NOTE: solution does not add_user_to_g, how do they update navbar on signup?
-        add_user_to_g()
+        # NOTE: do not need to add_user_to_g b/c the page will redirect
+        # which makes a request -- add_user_to_g will run before request
+        # add_user_to_g()
         flash('You are signed up and logged in.', 'success')
         return redirect(url_for('cafe_list'))
 
