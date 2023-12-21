@@ -12,7 +12,8 @@ GMAPS_BASE_API_URL = "https://www.google.com/maps/embed/v1/"
 def get_map_url(address, city, state):
     """Get Google Maps URL to embed a map for this location."""
 
-    params = urlencode({'key': GMAPS_API_KEY, 'q': f"{address} {city} {state}"})
+    params = urlencode({'key': GMAPS_API_KEY,
+                        'q': f"{address} {city} {state}"})
     url = f"{GMAPS_BASE_API_URL}place?{params}"
 
     return url
