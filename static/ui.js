@@ -8,7 +8,8 @@ const BASE_API_URL = "http://localhost:5001/api/"
 /******************************************************************************
  * DOM elements
  */
-const $toggleLikeBtn = $("#toggle-like-btn");
+const $cafeDetails = $("#cafe-details");
+const $userLikedCafesList = $("#user-liked-cafes")
 
 /******************************************************************************
  * checkIfCafeIsLiked: Makes API request to check if the current cafe is liked. 
@@ -16,6 +17,7 @@ const $toggleLikeBtn = $("#toggle-like-btn");
  *    Returns: true || false
 */
 async function checkIfCafeIsLiked(cafeId) {
+
   const params = new URLSearchParams({ "cafe_id": cafeId })
   const response = await fetch(`${BASE_API_URL}likes?${params}`,
     { method: "GET" });
@@ -63,12 +65,15 @@ async function handleLikeClick(evt) {
 
   if (cafeIsLiked) {
     await toggleLike(cafeId, "unlike");
-    $toggleLikeBtn.text("Not Liked");
+    $evtTarget.text("Not Liked");
   } else {
     await toggleLike(cafeId, "like");
-    $toggleLikeBtn.text("Liked");
+    $evtTarget.text("Liked");
   }
 }
 
-$toggleLikeBtn.on("click", handleLikeClick);
+//For the like button on cafe detail page
+$cafeDetails.on("click", ".toggle-like-btn", handleLikeClick);
+//For the like buttons on user profile page
+$userLikedCafesList.on("click", ".toggle-like-btn", handleLikeClick);
 
