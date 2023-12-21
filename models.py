@@ -3,7 +3,7 @@
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
-
+from mapping import get_map_url
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -99,6 +99,11 @@ class Cafe(db.Model):
 
         city = self.city
         return f'{city.name}, {city.state}'
+
+    def get_map_url(self):
+        """Return map url from Google Maps API for cafe."""
+        city = self.city
+        return get_map_url(self.address, city.name, city.state)
 
 
 class User(db.Model):
