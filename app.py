@@ -23,7 +23,18 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 toolbar = DebugToolbarExtension(app)
 connect_db(app)
-print('SQLALCHEMY_DATABASE_URI: ', app.config['SQLALCHEMY_DATABASE_URI'])
+# print('SQLALCHEMY_DATABASE_URI: ', app.config['SQLALCHEMY_DATABASE_URI'])
+
+
+#######################################
+# utilities
+
+# https://flask.palletsprojects.com/en/2.3.x/errorhandling/
+@app.errorhandler(404)
+def page_not_found(e):
+    """Return a custom 404 page."""
+    return render_template('404.html'), 404
+
 
 #######################################
 # auth & auth routes
