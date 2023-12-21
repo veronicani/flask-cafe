@@ -230,13 +230,20 @@ def signup():
     do_logout()
 
     form = SignupForm()
-    # TODO: no strip whitespace on inputs
-    data = {k: v for k, v in form.data.items() if k != "csrf_token"}
-
+    data = {k: v or None for k, v in form.data.items() if k != "csrf_token"}
+    
+    # TODO: does not strip whitespace on inputs when validating
     if form.validate_on_submit():
-        # NOTE: solution adds form.data individually, how address no image_url
-        # in models?
+
         user = User.register(**data)
+        # user = User.register(form.username.data,
+        #                      form.password.data,
+        #                      form.first_name.data,
+        #                      form.last_name.data,
+        #                      form.description.data,
+        #                      form.email.data,
+        #                      form.image_url.data or None,
+        #                      )
 
         db.session.add(user)
 
