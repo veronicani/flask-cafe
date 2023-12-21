@@ -15,13 +15,11 @@
     <h1>{{ cafe.name }}</h1>
 
     {% if cafe not in g.user.liked_cafes %}
-      <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" 
-      class="btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
+    <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" class="btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
     {% else %}
-      <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" 
-      class="btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+    <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" class="btn btn-outline-primary" href="FOR-AJAX">Liked</a>
     {% endif %}
-     
+
     <p class="lead">{{ cafe.description }}</p>
 
     <p><a href="{{ cafe.url }}">{{ cafe.url }}</a></p>
@@ -38,6 +36,10 @@
     </p>
 
   </div>
-
+  <iframe width="450" height="250" frameborder="0" style="border:0" 
+  referrerpolicy="no-referrer-when-downgrade"
+    src="{{ cafe.get_map_url() }}" 
+    allowfullscreen>
+  </iframe>
 </div>
 {% endblock %}
