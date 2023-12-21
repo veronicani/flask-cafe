@@ -1,11 +1,12 @@
 """Functions for getting maps to embed for Flask Cafe app."""
 import os
+
 # Found resource to create URL from params here:
 # https://stackoverflow.com/questions/15799696/how-to-build-urls-in-python-with-the-standard-library
 # https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
 from urllib.parse import urlencode
 
-GMAPS_API_KEY = os.environ['GMAPS_API_KEY']
+GMAPS_API_KEY = os.environ.get('GMAPS_API_KEY')
 GMAPS_BASE_API_URL = "https://www.google.com/maps/embed/v1/"
 
 
