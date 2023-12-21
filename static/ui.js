@@ -34,7 +34,7 @@ async function checkIfCafeIsLiked(cafeId) {
  *        If endpoint is "/unlike": {"unliked": <cafe_id>}
  */
 async function toggleLike(cafeId, endpoint) {
-  console.log("endpoint: ", endpoint);
+  // console.log("endpoint: ", endpoint);
   const response = await fetch(
     `${BASE_API_URL}${endpoint}`,
     {
