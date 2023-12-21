@@ -32,6 +32,7 @@ CURR_USER_KEY = "curr_user"
 NOT_LOGGED_IN_MSG = "You are not logged in."
 ADMIN_ONLY_MSG = "For administrators only."
 
+
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
@@ -420,3 +421,5 @@ def remove_like():
     else:
 
         return jsonify({"error": "Not logged in"})
+    
+# TODO: try out imsomnia request to GMaps API for map url, then test in browser
