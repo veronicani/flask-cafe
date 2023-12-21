@@ -10,16 +10,16 @@
     <img class="img-fluid mb-5" src="{{ cafe.image_url }}">
   </div>
 
-  <div class="col-12 col-sm-10 col-md-8">
+  <div id="cafe-details" class="col-12 col-sm-10 col-md-8">
 
     <h1>{{ cafe.name }}</h1>
 
     {% if cafe not in g.user.liked_cafes %}
-    <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" 
-    class="btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
+    <a data-cafe-id="{{ cafe.id }}" 
+    class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
     {% else %}
-    <a id="toggle-like-btn" data-cafe-id="{{ cafe.id }}" 
-    class="btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+    <a data-cafe-id="{{ cafe.id }}" 
+    class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
     {% endif %}
 
     <p class="lead">{{ cafe.description }}</p>
