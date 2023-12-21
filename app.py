@@ -115,12 +115,13 @@ def cafe_detail(cafe_id):
 @app.route('/cafes/add', methods=["GET", "POST"])
 def add_cafe():
     """ GET: Shows form for adding a cafe.
+    
     POST: Handle adding a cafe and redirects to new cafe's detail page on
     success (flash 'CAFENAME added'). Show form again on failure.
 
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
-
+    # TODO: refactor - move not g.user.admin above g.user.admin to remove nested else
     if not g.user:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
@@ -179,7 +180,7 @@ def edit_cafe(cafe_id):
     if not g.user:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
-
+    # TODO: refactor - move not g.user.admin above g.user.admin to remove nested else
     elif g.user.admin:
 
         cafe = Cafe.query.get_or_404(cafe_id)
@@ -196,6 +197,7 @@ def edit_cafe(cafe_id):
             flash(f'{cafe.name} edited!', 'success')
 
             return redirect(url_for('cafe_detail', cafe_id=cafe.id))
+
         else:
             return render_template(
                 'cafe/edit-form.html',
@@ -215,9 +217,14 @@ def edit_cafe(cafe_id):
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
     """ GET: Shows registration form.
-    POST: Process registration; if valid, adds user and then log them in. 
-        Redirects to cafe list with flashed message “You are signed up and 
-        logged in.” If invalid, show form again.
+
+    POST: Process registration; if valid, creates new user and adds to DB.
+        Logs in user, redirects to cafe list with flashed message
+        “You are signed up and logged in.”
+
+        If invalid, show form again.
+        If there is already a user with the same username: show form again with
+        flashed message "Username already taken."
     """
 
     do_logout()
@@ -227,7 +234,8 @@ def signup():
     data = {k: v for k, v in form.data.items() if k != "csrf_token"}
 
     if form.validate_on_submit():
-
+        # NOTE: solution adds form.data individually, how address no image_url
+        # in models?
         user = User.register(**data)
 
         db.session.add(user)
@@ -242,6 +250,7 @@ def signup():
             return render_template('auth/signup-form.html', form=form)
 
         do_login(user)
+        # NOTE: solution does not add_user_to_g, how do they update navbar on signup?
         add_user_to_g()
         flash('You are signed up and logged in.', 'success')
         return redirect(url_for('cafe_list'))
@@ -256,17 +265,17 @@ def signup():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     """ GET: Show login form.
+
     POST: Process login; if valid, logs user in and redirects to cafe list
         with flashed message “Hello, USERNAME!”. If invalid, show form again.
     """
 
     form = LoginForm()
-    username = form.username.data
-    password = form.password.data
 
     if form.validate_on_submit():
 
-        user = User.authenticate(username, password)
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
 
         if user:
             do_login(user)
@@ -327,7 +336,7 @@ def edit_profile():
 
     if g.user:
 
-        form = ProfileEditForm(obj=g.user)         
+        form = ProfileEditForm(obj=g.user)
 
         if form.validate_on_submit():
 
@@ -386,7 +395,7 @@ def add_like():
     if g.user:
 
         cafe_id = int(request.json["cafe_id"])
-        cafe = Cafe.query.get(cafe_id)
+        cafe = Cafe.query.get_or_404(cafe_id)
         g.user.liked_cafes.append(cafe)
 
         try:
@@ -417,7 +426,7 @@ def remove_like():
     if g.user:
 
         cafe_id = int(request.json["cafe_id"])
-        cafe = Cafe.query.get(cafe_id)
+        cafe = Cafe.query.get_or_404(cafe_id)
 
         try:
             g.user.liked_cafes.remove(cafe)
@@ -432,5 +441,3 @@ def remove_like():
     else:
 
         return jsonify({"error": "Not logged in"})
-    
-# TODO: try out imsomnia request to GMaps API for map url, then test in browser
