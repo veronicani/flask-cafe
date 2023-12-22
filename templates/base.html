@@ -48,7 +48,7 @@
       <!-- Log Out - show when someone is logged in -->
       <form class="form-inline my-2 my-lg-0" action="{{ url_for('logout') }}" 
       method="POST">
-        {{ g.form.hidden_tag() }}
+        {{ g.csrf_form.hidden_tag() }}
         <button class="btn-sm btn btn-outline-light">Log Out</button>
       </form>
       {% endif %}
