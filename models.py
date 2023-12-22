@@ -131,7 +131,8 @@ class Specialty(db.Model):
 
     type = db.Column(
         db.String(10),
-        
+        db.CheckConstraint("type IN ('beverage', 'dessert', 'course', 'side')"),
+        nullable=False,
     )
 
     description = db.Column(
