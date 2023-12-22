@@ -385,6 +385,42 @@ class CafeAdminViewsTestCase(TestCase):
             resp = client.get(f"/cafes/{id}/edit", follow_redirects=True)
             self.assertIn(b'Test description', resp.data)
 
+    def test_anon_delete(self):
+        id = self.cafe_id
+
+        with app.test_client() as client:
+            resp = client.get(f"/cafes/{id}/delete", follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+
+            resp = client.post(f"/cafes/{id}/delete", follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+    
+    def test_user_delete(self):
+        id = self.cafe_id
+
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+
+            resp = client.get(f"/cafes/{id}/delete", follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+            resp = client.post(
+                f"/cafes/{id}/delete", follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+    def test_admin_delete(self):
+        id = self.cafe_id
+
+        with app.test_client() as client:
+            login_for_test(client, self.admin_id)
+
+            resp = client.get(f"/cafes/{id}/delete", follow_redirects=True)
+            self.assertIn(b'want to delete', resp.data)
+
+            resp = client.post(
+                f"/cafes/{id}/delete", follow_redirects=True)
+            self.assertIn(b'Deleted', resp.data)
+            self.assertNotIn(id, db.session.query(Cafe.id))
 
 #######################################
 # users
