@@ -6,6 +6,12 @@
 const BASE_API_URL = "http://localhost:5001/api/"
 
 /******************************************************************************
+ * Bootstrap Popper Elements
+ */
+//enable Tooltips
+const $tooltipTriggerList = $('[data-bs-toggle="tooltip"]')
+const tooltipList = [...$tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+/******************************************************************************
  * DOM elements
  */
 const $cafeDetails = $("#cafe-details");
