@@ -14,8 +14,9 @@ db.create_all()
 sf = City(code='sf', name='San Francisco', state='CA')
 berk = City(code='berk', name='Berkeley', state='CA')
 oak = City(code='oak', name='Oakland', state='CA')
+jackson = City(code='jackson', name='Jackson Heights', state='NY')
 
-db.session.add_all([sf, berk, oak])
+db.session.add_all([sf, berk, oak, jackson])
 db.session.commit()
 
 
@@ -42,7 +43,17 @@ c2 = Cafe(
     image_url='https://s3-media4.fl.yelpcdn.com/bphoto/0vhzcgkzIUIEPIyL2rF_YQ/o.jpg',
 )
 
-db.session.add_all([c1, c2])
+c3 = Cafe(
+    name='Caffé Bene',
+    description='Coffeehouse chain with a relaxed European vibe & a menu of'
+        ' sweet treats & sandwiches.',
+    address='80-25 37th Ave',
+    city_code='jackson',
+    url='http://www.caffebene.co.kr/',
+    image_url='https://lh3.googleusercontent.com/p/AF1QipOv3ESP5NMHku6ctfsQ_nm918CivEEvt0bImwt9=s680-w680-h510',
+)
+
+db.session.add_all([c1, c2, c3])
 db.session.commit()
 
 #######################################
@@ -63,7 +74,15 @@ s2 = Specialty(
     image_url=None,
 )
 
-db.session.add_all([s1, s2])
+s3 = Specialty(
+    name="Hot Chocolate",
+    cafe_id=1,
+    description='Made with 100%% cocoa and a touch of Bernie''s special chili'
+        ' spice blend. Satisfyingly rich!',
+    image_url='https://backforseconds.com/wp-content/uploads/2017/11/Best-Homemade-Hot-Chocolate-EVER-FG.jpg',
+)
+
+db.session.add_all([s1, s2, s3])
 db.session.commit()
 #######################################
 # add users
