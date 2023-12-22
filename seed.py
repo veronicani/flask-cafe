@@ -1,6 +1,6 @@
 """Initial data."""
 
-from models import City, Cafe, db, User
+from models import City, Cafe, db, User, Specialty
 
 from app import app
 
@@ -45,7 +45,26 @@ c2 = Cafe(
 db.session.add_all([c1, c2])
 db.session.commit()
 
+#######################################
+# add cafe specialties
 
+s1 = Specialty(
+    name="Cardamom Latté",
+    cafe_id=2,
+    description='Creamy and fragrant, it brings a floral and peppery note'
+        ' to your day.',
+    image_url='https://aubreyskitchen.com/wp-content/uploads/2020/10/Cardamom-Latte-portrait.jpg',
+)
+
+s2 = Specialty(
+    name="Blueberry Biscuit",
+    cafe_id=1,
+    description=None,
+    image_url=None,
+)
+
+db.session.add_all([s1, s2])
+db.session.commit()
 #######################################
 # add users
 

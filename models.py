@@ -10,6 +10,7 @@ db = SQLAlchemy()
 
 DEFAULT_CAFE_IMAGE_URL = "/static/images/default-cafe.jpg"
 DEFAULT_USER_IMAGE_URL = "/static/images/default-pic.png"
+DEFAULT_SPECIALTY_IMAGE_URL = None
 BCRYPT_WORK_FACTOR = 9
 
 
@@ -87,7 +88,8 @@ class Cafe(db.Model):
     )
 
     city = db.relationship("City", backref='cafes')
-    # Backref in Users
+    specialties = db.relationship("Specialty", backref='cafe')
+    # Backref in User
     # liking_users = db.relationship(
     #    'User', secondary='cafes_users', backref='liked_cafes')
 
@@ -104,6 +106,43 @@ class Cafe(db.Model):
         """Return map url from Google Maps API for cafe."""
         city = self.city
         return get_map_url(self.address, city.name, city.state)
+
+
+class Specialty(db.Model):
+    """Cafe specialties."""
+
+    __tablename__ = 'specialties'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    name = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    cafe_id = db.Column(
+        db.Integer,
+        db.ForeignKey('cafes.id'),
+        nullable=False,
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=False,
+        default='',
+    )
+
+    image_url = db.Column(
+        db.Text,
+        nullable=False,
+        default='',
+    )
+
+    # Backref in Cafe
+    # cafe = db.relationship("Cafe", backref='specialties')
 
 
 class User(db.Model):
