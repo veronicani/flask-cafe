@@ -8,7 +8,7 @@ from flask import jsonify, request
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, Cafe, City, User
+from models import db, connect_db, Cafe, City, User, Like
 from forms import CafeForm, SignupForm, LoginForm, ProfileEditForm, \
     CSRFProtectForm
 
@@ -59,7 +59,7 @@ def add_user_to_g():
 def add_csrf_to_g():
     """Add CSRF form to Flask global."""
 
-    g.form = CSRFProtectForm()
+    g.csrf_form = CSRFProtectForm()
 
 
 def do_login(user):
@@ -168,13 +168,12 @@ def add_cafe():
         return redirect(url_for('cafe_list'))
 
 
-
 @app.route('/cafes/<int:cafe_id>/edit', methods=["GET", "POST"])
 def edit_cafe(cafe_id):
     """ GET: Shows form for editing a cafe.
     POST: Handle editing a cafe and redirects to cafe's detail page on
     success (flash 'CAFENAME edited'). Show form again on failure.
-
+    If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
     if not g.user:
@@ -208,6 +207,43 @@ def edit_cafe(cafe_id):
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
+
+@app.route('/cafes/<int:cafe_id>/delete', methods=["GET", "POST"])
+def delete_cafe(cafe_id):
+    """ GET: Shows confirmation to delete a cafe.
+    POST: Deletes a cafe.
+
+    If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
+    """
+
+    if not g.user:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
+
+    elif g.user.admin:
+
+        cafe = Cafe.query.get_or_404(cafe_id)
+
+        if g.csrf_form.validate_on_submit():
+
+            Like.query.filter(Like.liked_cafes == cafe_id).delete()
+            db.session.delete(cafe)
+
+            db.session.commit()
+
+            flash(f"Deleted '{cafe.name}'", 'danger')
+            return redirect(url_for('cafe_list'))
+
+        else:
+            return render_template(
+                'cafe/delete-confirm.html',
+                cafe=cafe,
+            )
+
+    else:
+        flash(ADMIN_ONLY_MSG, 'danger')
+        return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
 #######################################
 # user signup/login/logout
