@@ -232,7 +232,7 @@ def delete_cafe(cafe_id):
 
             db.session.commit()
 
-            flash(f"Deleted '{cafe.name}'", 'danger')
+            flash(f"Deleted '{cafe.name}' 🪦 R.I.P", 'warning')
             return redirect(url_for('cafe_list'))
 
         else:
