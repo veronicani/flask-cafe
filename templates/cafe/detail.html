@@ -12,19 +12,19 @@
 
   <div id="cafe-details" class="col-12 col-sm-10 col-md-8">
     <h1>{{ cafe.name }}</h1>
+    
     {% if not g.user %}
       <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary" 
       data-bs-toggle="tooltip" data-bs-placement="right" 
       data-bs-original-title="Signup or login to like!"
       href="{{ url_for('login') }}">Not Liked</a>
     {% endif %}
+
     {% if g.user %}
       {% if cafe not in g.user.liked_cafes %}
-      
       <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
       {% else %}
       <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
-      
       {% endif %}
     {% endif %}
 
