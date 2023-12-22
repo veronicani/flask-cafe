@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %} Delete {{ cafe.name }} {% endblock %}
+
+{% block content %}
+
+  <h1 class="mb-4">Confirm Delete</h1>
+  <p>Are you sure you want to delete {{ cafe.name }}?</p>
+  <form method="POST">
+    {{ g.csrf_form.hidden_tag() }}
+    <button class= "btn btn-primary" type="submit">Delete</button>
+  </form>
+
+{% endblock %}
