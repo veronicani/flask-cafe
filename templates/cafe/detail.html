@@ -57,6 +57,7 @@
     </ul>
     {% endif %}
 
+    {% if g.user.admin %}
     <p>
       <a class="btn btn-outline-primary" href="/cafes/{{ cafe.id }}/edit">
         Edit Cafe
@@ -65,6 +66,8 @@
         Delete Cafe
       </a>
     </p>
+    {% endif %}
+    
     <iframe width="450" height="250" frameborder="0" style="border:0" referrerpolicy="no-referrer-when-downgrade"
       src="{{ cafe.get_map_url() }}" allowfullscreen>
     </iframe>
