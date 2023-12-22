@@ -20,12 +20,12 @@ class City(db.Model):
     __tablename__ = 'cities'
 
     code = db.Column(
-        db.Text,
+        db.String(10),
         primary_key=True,
     )
 
     name = db.Column(
-        db.Text,
+        db.String(50),
         nullable=False,
     )
 
@@ -54,7 +54,7 @@ class Cafe(db.Model):
     )
 
     name = db.Column(
-        db.Text,
+        db.String(50),
         nullable=False,
     )
 
@@ -71,12 +71,12 @@ class Cafe(db.Model):
     )
 
     address = db.Column(
-        db.Text,
+        db.String(50),
         nullable=False,
     )
 
     city_code = db.Column(
-        db.Text,
+        db.String(10),
         db.ForeignKey('cities.code'),
         nullable=False,
     )
@@ -119,7 +119,7 @@ class Specialty(db.Model):
     )
 
     name = db.Column(
-        db.Text,
+        db.String(30),
         nullable=False,
     )
 
@@ -127,6 +127,11 @@ class Specialty(db.Model):
         db.Integer,
         db.ForeignKey('cafes.id'),
         nullable=False,
+    )
+
+    type = db.Column(
+        db.String(10),
+        
     )
 
     description = db.Column(
@@ -156,7 +161,7 @@ class User(db.Model):
     )
 
     username = db.Column(
-        db.Text,
+        db.String(20),
         unique=True,
         nullable=False,
     )
@@ -168,17 +173,17 @@ class User(db.Model):
     )
 
     email = db.Column(
-        db.Text,
+        db.String(50),
         nullable=False,
     )
 
     first_name = db.Column(
-        db.Text,
+        db.String(30),
         nullable=False,
     )
 
     last_name = db.Column(
-        db.Text,
+        db.String(30),
         nullable=False,
     )
 
@@ -195,7 +200,7 @@ class User(db.Model):
     )
 
     hashed_password = db.Column(
-        db.Text,
+        db.String,
         nullable=False,
     )
 
