@@ -63,6 +63,15 @@ CAFE_DATA = dict(
     image_url="http://testcafeimg.com/"
 )
 
+CAFE_DATA_NEW = dict(
+    name="Another Cafe",
+    description="Another description",
+    url="http://anothercafe.com/",
+    address="500 Sansome St",
+    city_code="sf",
+    image_url="http://anothercafeimg.com/"
+)
+
 CAFE_DATA_EDIT = dict(
     name="new-name",
     description="new-description",
@@ -269,42 +278,6 @@ class CafeAdminViewsTestCase(TestCase):
         City.query.delete()
         db.session.commit()
 
-    def test_anon_add(self):
-        with app.test_client() as client:
-            resp = client.get(f"/cafes/add", follow_redirects=True)
-            self.assertIn(b'You are not logged in.', resp.data)
-
-            resp = client.post(
-                f"/cafes/add",
-                data=CAFE_DATA_EDIT,
-                follow_redirects=True)
-            self.assertIn(b'You are not logged in.', resp.data)
-    
-    def test_user_add(self):
-        with app.test_client() as client:
-            login_for_test(client, self.user_id)
-            resp = client.get(f"/cafes/add", follow_redirects=True)
-            self.assertIn(b'For administrators only.', resp.data)
-
-            resp = client.post(
-                f"/cafes/add",
-                data=CAFE_DATA_EDIT,
-                follow_redirects=True)
-            self.assertIn(b'For administrators only.', resp.data)
-
-    def test_admin_add(self):
-        with app.test_client() as client:
-            login_for_test(client, self.admin_id)
-
-            resp = client.get(f"/cafes/add")
-            self.assertIn(b'Add Cafe', resp.data)
-
-            resp = client.post(
-                f"/cafes/add",
-                data=CAFE_DATA_EDIT,
-                follow_redirects=True)
-            self.assertIn(b'added', resp.data)
-
     def test_dynamic_cities_vocab(self):
         id = self.cafe_id
 
@@ -322,6 +295,43 @@ class CafeAdminViewsTestCase(TestCase):
 
             resp = client.get(f"/cafes/{id}/edit")
             self.assertRegex(resp.data.decode('utf8'), choices_pattern)
+
+    def test_anon_add(self):
+        with app.test_client() as client:
+            resp = client.get(f"/cafes/add", follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+
+            resp = client.post(
+                f"/cafes/add",
+                data=CAFE_DATA_NEW,
+                follow_redirects=True)
+            self.assertIn(b'You are not logged in.', resp.data)
+    
+    def test_user_add(self):
+        with app.test_client() as client:
+            login_for_test(client, self.user_id)
+            resp = client.get(f"/cafes/add", follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+            resp = client.post(
+                f"/cafes/add",
+                data=CAFE_DATA_NEW,
+                follow_redirects=True)
+            self.assertIn(b'For administrators only.', resp.data)
+
+    def test_admin_add(self):
+        with app.test_client() as client:
+            login_for_test(client, self.admin_id)
+
+            resp = client.get(f"/cafes/add")
+            self.assertIn(b'Add Cafe', resp.data)
+
+            resp = client.post(
+                f"/cafes/add",
+                data=CAFE_DATA_NEW,
+                follow_redirects=True)
+            self.assertIn(b'added', resp.data)
+            self.assertIn(b'Another Cafe', resp.data)
 
     def test_anon_edit(self):
         id = self.cafe_id
