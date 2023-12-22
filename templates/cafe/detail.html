@@ -31,13 +31,13 @@
 
 
 
-    {% if cafe.specialties %}
+    {% if specialties %}
     <ul id="cafe-specialties" class="list-group mb-2">
       <li class="list-group-item list-group-item-action active">
         <h3>Cafe Specialties</h2>
       </li>
 
-      {% for s in cafe.specialties %}
+      {% for s in specialties %}
       <li class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <h5 class="mb-1">{{ s.name }}</h5>

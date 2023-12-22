@@ -8,7 +8,7 @@ from flask import jsonify, request
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, Cafe, City, User, Like
+from models import db, connect_db, Cafe, City, User, Like, Specialty
 from forms import CafeForm, SignupForm, LoginForm, ProfileEditForm, \
     CSRFProtectForm
 
@@ -105,10 +105,20 @@ def cafe_detail(cafe_id):
     """Show detail for cafe."""
 
     cafe = Cafe.query.get_or_404(cafe_id)
+    specialties = (Specialty
+                   .query
+                   .filter(Specialty.cafe_id == cafe_id)
+                   .order_by(Specialty.type == 'side',
+                             Specialty.type == 'course',
+                             Specialty.type == 'dessert',
+                             Specialty.type == 'beverage',
+                             Specialty.name.asc())
+                   .all())
 
     return render_template(
         'cafe/detail.html',
         cafe=cafe,
+        specialties=specialties
     )
 
 
