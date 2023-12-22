@@ -61,6 +61,7 @@ db.session.commit()
 
 s1 = Specialty(
     name="Cardamom Latté",
+    type="beverage",
     cafe_id=2,
     description='Creamy and fragrant, it brings a floral and peppery note'
         ' to your day.',
@@ -69,6 +70,7 @@ s1 = Specialty(
 
 s2 = Specialty(
     name="Blueberry Biscuit",
+    type="dessert",
     cafe_id=1,
     description=None,
     image_url=None,
@@ -76,8 +78,9 @@ s2 = Specialty(
 
 s3 = Specialty(
     name="Hot Chocolate",
+    type="beverage",
     cafe_id=1,
-    description='Made with 100%% cocoa and a touch of Bernie''s special chili'
+    description='Made with 100% cocoa and a touch of Bernie''s special chili'
         ' spice blend. Satisfyingly rich!',
     image_url='https://backforseconds.com/wp-content/uploads/2017/11/Best-Homemade-Hot-Chocolate-EVER-FG.jpg',
 )
