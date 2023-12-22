@@ -15,11 +15,9 @@
     <h1>{{ cafe.name }}</h1>
 
     {% if cafe not in g.user.liked_cafes %}
-    <a data-cafe-id="{{ cafe.id }}" 
-    class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
+    <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
     {% else %}
-    <a data-cafe-id="{{ cafe.id }}" 
-    class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+    <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
     {% endif %}
 
     <p class="lead">{{ cafe.description }}</p>
@@ -31,24 +29,34 @@
       {{ cafe.get_city_state() }}<br>
     </p>
 
-    <h2>Cafe Specialties</h2>
-    <!-- TODO: Implement specialties -->
-    {% if g.user.liked_cafes %}
-      <ul id="user-liked-cafes" class="list-group mb-2">
-        {% for cafe in g.user.liked_cafes %}
-        
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}">
-              {{ cafe.name }}</a>
-            <a data-cafe-id="{{ cafe.id }}" 
-            class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
-          </li>
-          {% endfor %}
-      </ul>
-    {% else %}
-      <p>You have no liked cafes.</p>
+
+
+    {% if cafe.specialties %}
+    <ul id="cafe-specialties" class="list-group mb-2">
+      <li class="list-group-item list-group-item-action active">
+        <h3>Cafe Specialties</h2>
+      </li>
+
+      {% for s in cafe.specialties %}
+      <li class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ s.name }}</h5>
+        </div>
+        <div class="d-flex w-100 justify-content-between">
+          <p class="mb-1">{{ s.description }}</p>
+
+          {% if s.image_url %}
+          <img class="rounded float-end" style="width: 5em" 
+          src="{{ s.image_url }}" alt="{{ s.name }}">
+          {% endif %}
+
+        </div>
+      </li>
+      {% endfor %}
+
+    </ul>
     {% endif %}
-    
+
     <p>
       <a class="btn btn-outline-primary" href="/cafes/{{ cafe.id }}/edit">
         Edit Cafe
@@ -57,10 +65,8 @@
         Delete Cafe
       </a>
     </p>
-    <iframe width="450" height="250" frameborder="0" style="border:0" 
-    referrerpolicy="no-referrer-when-downgrade"
-      src="{{ cafe.get_map_url() }}" 
-      allowfullscreen>
+    <iframe width="450" height="250" frameborder="0" style="border:0" referrerpolicy="no-referrer-when-downgrade"
+      src="{{ cafe.get_map_url() }}" allowfullscreen>
     </iframe>
   </div>
 </div>
