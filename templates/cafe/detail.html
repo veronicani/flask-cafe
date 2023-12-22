@@ -31,6 +31,24 @@
       {{ cafe.get_city_state() }}<br>
     </p>
 
+    <h2>Cafe Specialties</h2>
+    <!-- TODO: Implement specialties -->
+    {% if g.user.liked_cafes %}
+      <ul id="user-liked-cafes" class="list-group mb-2">
+        {% for cafe in g.user.liked_cafes %}
+        
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}">
+              {{ cafe.name }}</a>
+            <a data-cafe-id="{{ cafe.id }}" 
+            class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+          </li>
+          {% endfor %}
+      </ul>
+    {% else %}
+      <p>You have no liked cafes.</p>
+    {% endif %}
+    
     <p>
       <a class="btn btn-outline-primary" href="/cafes/{{ cafe.id }}/edit">
         Edit Cafe
