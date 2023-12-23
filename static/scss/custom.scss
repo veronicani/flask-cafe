@@ -1,8 +1,27 @@
-// 2. Include any default variable overrides here
-$primary: #9ab61d;
+//Variable overrides
+
+//Color System
+$primary: rgb(107, 128, 0);
 
 
+// Fonts
+$headings-font-family:   "Noto Sans", "Arial Narrow Bold", sans-serif !default;
+$web-font-path: "https://fonts.googleapis.com/css2?family=Noto+Sans:ital@0;1&display=swap";
 
 @import "../node_modules/bootswatch/dist/journal/variables";
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/bootswatch/dist/journal/bootswatch";
+
+// Variables
+
+
+//Navbar
+.navbar {
+  padding-inline: 1rem;
+  // padding-block: .5rem;
+}
+
+.navbar-brand {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1rem;
+}
