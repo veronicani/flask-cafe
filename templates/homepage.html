@@ -5,22 +5,34 @@
 {% block content %}
 
 <div class="homepage">
-  <h1 class="display-1">Flask Cafe</h1>
-  <h3 class="display-5">Where Coffee Dreams Come True.</h3>
-  <a class="mt-5 btn btn-primary" href="/cafes">View Our Cafes</a>
+  <div class="col-md-7">
+    <div class="hero-text p-3 border rounded-3">
+        <h1 class="display-1">Where Coffee Dreams Come True.</h1>
+        <p>Meet your one-stop shop for the best brew in town.</p>
+      </div>
+      <a class="mt-5 btn btn-primary btn-lg px-5" href="/cafes">View Our Cafes</a>
+  </div>
 </div>
 
 <style>
-    body {
-      background: url(/static/images/homepage.jpg) no-repeat center center fixed;
-      background-size: cover;
-    }
+  body {
+    background: url(/static/images/homepage.jpg) no-repeat center center fixed;
+    background-size: cover;
+  }
 
-    .display-1, .display-5 {
-      color: white;
-      text-shadow: black 3px 3px !important;
-      letter-spacing: 0.05em
-    }
+  .hero-text {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-text h1,
+  .hero-text p {
+    color: white;
+    letter-spacing: 0.05em
+  }
+
+  .display-1 {
+    font-family: 'Londrina Solid', 'Noto Sans', sans-serif;
+  }
 </style>
 
 {% endblock %}
