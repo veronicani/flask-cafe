@@ -71,10 +71,14 @@ async function handleLikeClick(evt) {
 
   if (cafeIsLiked) {
     await toggleLike(cafeId, "unlike");
-    $evtTarget.text("Not Liked");
+    $evtTarget
+      .text(" Like")
+      .toggleClass("bi-heart-fill bi-heart");
   } else {
     await toggleLike(cafeId, "like");
-    $evtTarget.text("Liked");
+    $evtTarget
+      .text("")
+      .toggleClass("bi-heart-fill bi-heart");
   }
 }
 
