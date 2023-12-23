@@ -15,8 +15,8 @@
     <h1>{{ g.user.get_full_name() }}</h1>
     <p class="lead">{{ g.user.description }}</p>
 
-    <p><b>Username:</b>{{ g.user.username }}</p>
-    <p><b>Email:</b>{{ g.user.email }}</p>
+    <p><b>Username: </b>{{ g.user.username }}</p>
+    <p><b>Email: </b>{{ g.user.email }}</p>
     
     <h2>Your Liked Cafes</h2>
     
@@ -28,7 +28,8 @@
             <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}">
               {{ cafe.name }}</a>
             <a data-cafe-id="{{ cafe.id }}" 
-            class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+            class="toggle-like-btn btn btn-outline-primary bi bi-heart-fill" 
+            href="FOR-AJAX" aria-label="Unlike"></a>
           </li>
           {% endfor %}
       </ul>

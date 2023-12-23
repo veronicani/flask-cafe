@@ -14,17 +14,21 @@
     <h1>{{ cafe.name }}</h1>
     
     {% if not g.user %}
-      <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary" 
+      <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary bi bi-heart" 
       data-bs-toggle="tooltip" data-bs-placement="right" 
       data-bs-original-title="Signup or login to like!"
-      href="{{ url_for('login') }}">Not Liked</a>
+      href="{{ url_for('login') }}" aria-label="Like"> Like</a>
     {% endif %}
 
     {% if g.user %}
       {% if cafe not in g.user.liked_cafes %}
-      <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Not Liked</a>
+      <a data-cafe-id="{{ cafe.id }}" 
+      class="toggle-like-btn btn btn-outline-primary bi bi-heart" 
+      href="FOR-AJAX" aria-label="Like"> Like</a>
       {% else %}
-      <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX">Liked</a>
+      <a data-cafe-id="{{ cafe.id }}" 
+      class="toggle-like-btn btn btn-outline-primary bi bi-heart-fill" 
+      href="FOR-AJAX" aria-label="Unlike"></a>
       {% endif %}
     {% endif %}
 
