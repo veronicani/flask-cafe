@@ -1,12 +1,43 @@
 //VARIABLE OVERRIDES
 
 //Color System
-$primary: #3DAFB7;
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #eee !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #aaa !default;
+$gray-600: #777 !default;
+$gray-700: #495057 !default;
+$gray-800: #333 !default;
+$gray-900: #222 !default;
+$black:    #000 !default;
 
+$blue:    #1966ec !default;
+$indigo:  #6610f2 !default;
+$purple:  #6f42c1 !default;
+$pink:    #e83e8c !default;
+$red:     #f54500 !default;
+$orange:  #fd7e14 !default;
+$yellow:  #f5e625 !default;
+$green:   #22b24c !default;
+$teal:    #20c997 !default;
+$cyan:    #369 !default;
+
+$primary:       #3DAFB7 !default;
+$secondary:     $gray-500 !default;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $gray-100 !default;
+$dark:          $gray-900 !default;
 
 //Fonts
-$headings-font-family: "Noto Sans", "Arial Narrow Bold", sans-serif;
 $web-font-path: "https://fonts.googleapis.com/css2?family=Londrina+Solid&family=Noto+Sans:wght@400;700&display=swap";
+
+$headings-display-font-family: 'Londrina Solid', 'Noto Sans', sans-serif;
+$headings-font-family: "Noto Sans", "Arial Narrow Bold", sans-serif;
 
 @import "../node_modules/bootstrap/scss/_functions";
 @import "../node_modules/bootstrap/scss/_variables";
@@ -34,13 +65,32 @@ $link-hover-decoration:                   underline;
   background-color: $white;
 }
 
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  color: $link-hover-color;
+  text-decoration: underline;
+}
+
+.toggle-like-btn {
+  color: $red;
+}
+
+//Typography
+h1 {
+  font-family: $headings-display-font-family;
+  color: $primary;
+}
+
 //Navbar
 .navbar {
   padding-inline: 1rem;
 
   .navbar-brand {
     padding: 0; 
-    font-family: 'Londrina Solid', 'Noto Sans', sans-serif;
+    font-family: $headings-display-font-family;
     font-size: 2rem;
   }
 
@@ -68,6 +118,7 @@ $link-hover-decoration:                   underline;
 }
 
 //Cafe List
+
 .card-title a {
   text-decoration: none;
   font-weight: bold;
@@ -77,3 +128,9 @@ $link-hover-decoration:                   underline;
   color: $link-hover-color;
   text-decoration: $link-hover-decoration;
 }
+
+.card-subtitle {
+  font-style: italic;
+}
+
+//
