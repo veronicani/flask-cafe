@@ -5,44 +5,44 @@
 {% block content %}
 
 <div class="row justify-content-center">
-
+  <!-- Cafe Image -->
   <div class="col-10 col-sm-8 col-md-4 col-lg-3">
     <img class="img-fluid mb-5" src="{{ cafe.image_url }}">
   </div>
-
+  <!-- Cafe Details -->
   <div id="cafe-details" class="col-12 col-sm-10 col-md-8">
-    <h1>{{ cafe.name }}</h1>
-    
-    {% if not g.user %}
-      <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary bi bi-heart" 
-      data-bs-toggle="tooltip" data-bs-placement="right" 
-      data-bs-original-title="Signup or login to like!"
-      href="{{ url_for('login') }}" aria-label="Like"> Like</a>
-    {% endif %}
-
-    {% if g.user %}
-      {% if cafe not in g.user.liked_cafes %}
-      <a data-cafe-id="{{ cafe.id }}" 
-      class="toggle-like-btn btn btn-outline-primary bi bi-heart" 
-      href="FOR-AJAX" aria-label="Like"> Like</a>
-      {% else %}
-      <a data-cafe-id="{{ cafe.id }}" 
-      class="toggle-like-btn btn btn-outline-primary bi bi-heart-fill" 
-      href="FOR-AJAX" aria-label="Unlike"></a>
+    <div>
+      <!-- Cafe Name -->
+      <h1>{{ cafe.name }}</h1>
+      <!-- Anon Like Button -->
+      {% if not g.user %}
+      <!-- TODO: move the heart to be it's own <i> so can style separately -->
+      <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary bi bi-heart" data-bs-toggle="tooltip"
+        data-bs-placement="right" data-bs-original-title="Signup or login to like!" href="{{ url_for('login') }}"
+        aria-label="Like"> Like</a>
       {% endif %}
-    {% endif %}
-
+      <!-- User Like Button -->
+      {% if g.user %}
+        {% if cafe not in g.user.liked_cafes %}
+        <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary bi bi-heart" href="FOR-AJAX"
+          aria-label="Like"> Like</a>
+        {% else %}
+        <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary bi bi-heart-fill" href="FOR-AJAX"
+          aria-label="Unlike"></a>
+        {% endif %}
+      {% endif %}
+    </div>
+    <!-- Description -->
     <p class="lead">{{ cafe.description }}</p>
-
+    <!-- URL -->
     <p><a href="{{ cafe.url }}">{{ cafe.url }}</a></p>
-
+    <!-- Address -->
     <p>
       {{ cafe.address }}<br>
       {{ cafe.get_city_state() }}<br>
     </p>
 
-
-
+    <!-- Specialties -->
     {% if specialties %}
     <ul id="cafe-specialties" class="list-group mb-2">
       <li class="list-group-item list-group-item-action active">
@@ -58,8 +58,7 @@
           <p class="mb-1">{{ s.description }}</p>
 
           {% if s.image_url %}
-          <img class="rounded float-end" style="width: 5em" 
-          src="{{ s.image_url }}" alt="{{ s.name }}">
+          <img class="rounded float-end" style="width: 5em" src="{{ s.image_url }}" alt="{{ s.name }}">
           {% endif %}
 
         </div>
@@ -69,20 +68,24 @@
     </ul>
     {% endif %}
 
+    <!-- Map -->
+    <iframe width="450" height="250" frameborder="0" style="border:0" referrerpolicy="no-referrer-when-downgrade"
+      src="{{ cafe.get_map_url() }}" allowfullscreen>
+    </iframe>
+
+    <!-- Edit/Delete -->
     {% if g.user.admin %}
     <p>
       <a class="btn btn-outline-primary" href="/cafes/{{ cafe.id }}/edit">
         Edit Cafe
       </a>
-      <a class="btn btn-outline-primary" href="/cafes/{{ cafe.id }}/delete">
+      <a class="btn btn-outline-danger" href="/cafes/{{ cafe.id }}/delete">
         Delete Cafe
       </a>
     </p>
     {% endif %}
 
-    <iframe width="450" height="250" frameborder="0" style="border:0" referrerpolicy="no-referrer-when-downgrade"
-      src="{{ cafe.get_map_url() }}" allowfullscreen>
-    </iframe>
+
   </div>
 </div>
 {% endblock %}
