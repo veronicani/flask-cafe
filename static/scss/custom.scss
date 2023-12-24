@@ -1,26 +1,79 @@
-//Variable overrides
+//VARIABLE OVERRIDES
 
 //Color System
-$primary: rgb(107, 128, 0);
+$primary: #3DAFB7;
 
 
-// Fonts
-$headings-font-family:   "Noto Sans", "Arial Narrow Bold", sans-serif !default;
-$web-font-path: "https://fonts.googleapis.com/css2?family=Noto+Sans:ital@0;1&display=swap";
+//Fonts
+$headings-font-family: "Noto Sans", "Arial Narrow Bold", sans-serif;
+$web-font-path: "https://fonts.googleapis.com/css2?family=Londrina+Solid&family=Noto+Sans:wght@400;700&display=swap";
 
+@import "../node_modules/bootstrap/scss/_functions";
+@import "../node_modules/bootstrap/scss/_variables";
+
+//Links
+$link-color:                              $primary;
+$link-decoration:                         underline;
+$link-shade-percentage:                   20%;
+$link-hover-color:                        shift-color($link-color, $link-shade-percentage);
+$link-hover-decoration:                   underline;
+
+// Bootswatch + Bootstrap Imports
 @import "../node_modules/bootswatch/dist/journal/variables";
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/bootswatch/dist/journal/bootswatch";
 
+//Utils
+.btn-primary {
+  color: $white;
+  border: none;
+}
 
+.btn-primary:hover {
+  color: $primary;
+  background-color: $white;
+}
 
 //Navbar
 .navbar {
   padding-inline: 1rem;
-  // padding-block: .5rem;
+
+  .navbar-brand {
+    padding: 0; 
+    font-family: 'Londrina Solid', 'Noto Sans', sans-serif;
+    font-size: 2rem;
+  }
+
+  .navbar-toggler {
+    border: none;
+    padding-inline: 4px;
+  }
 }
 
-.navbar-brand {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 1rem;
+//Homepage
+.homepage {
+  .hero-text {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .hero-text h1,
+  .hero-text p {
+    color: white;
+    letter-spacing: 0.05em
+  }
+  
+  .display-1 {
+    font-family: 'Londrina Solid', 'Noto Sans', sans-serif;
+  }
+}
+
+//Cafe List
+.card-title a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.card-title a:hover {
+  color: $link-hover-color;
+  text-decoration: $link-hover-decoration;
 }
