@@ -28,8 +28,9 @@
             <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}">
               {{ cafe.name }}</a>
             <a data-cafe-id="{{ cafe.id }}" 
-            class="toggle-like-btn btn btn-outline-primary bi bi-heart-fill" 
-            href="FOR-AJAX" aria-label="Unlike"></a>
+            class="toggle-like-btn btn btn-outline-primary" 
+            href="FOR-AJAX" aria-label="Unlike">
+            <i class="bi bi-heart-fill"></i></a>
           </li>
           {% endfor %}
       </ul>
