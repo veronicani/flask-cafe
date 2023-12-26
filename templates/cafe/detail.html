@@ -24,11 +24,11 @@
       <!-- User Like Button -->
       {% if g.user %}
         {% if cafe not in g.user.liked_cafes %}
-        <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary bi bi-heart" href="FOR-AJAX"
-          aria-label="Like"> Like</a>
+        <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX"
+          aria-label="Like"><i class="bi bi-heart"></i> Like</a>
         {% else %}
-        <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary bi bi-heart-fill" href="FOR-AJAX"
-          aria-label="Unlike"></a>
+        <a data-cafe-id="{{ cafe.id }}" class="toggle-like-btn btn btn-outline-primary" href="FOR-AJAX"
+          aria-label="Unlike"><i class="bi bi-heart-fill"></i></a>
         {% endif %}
       {% endif %}
     </div>

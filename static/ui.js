@@ -65,20 +65,19 @@ async function handleLikeClick(evt) {
   evt.preventDefault();
 
   const $evtTarget = $(evt.target);
-  const cafeId = $evtTarget.data("cafe-id");
+  const $toggleLikeBtn = $evtTarget.closest(".toggle-like-btn");
+  const cafeId = $toggleLikeBtn.data("cafe-id");
 
   const cafeIsLiked = await checkIfCafeIsLiked(cafeId);
 
   if (cafeIsLiked) {
     await toggleLike(cafeId, "unlike");
-    $evtTarget
-      .text(" Like")
-      .toggleClass("bi-heart-fill bi-heart");
+    $toggleLikeBtn
+    .html('<i class="bi bi-heart"></i> Like');
   } else {
     await toggleLike(cafeId, "like");
-    $evtTarget
-      .text("")
-      .toggleClass("bi-heart-fill bi-heart");
+    $toggleLikeBtn
+    .html('<i class="bi bi-heart-fill"></i>');
   }
 }
 
