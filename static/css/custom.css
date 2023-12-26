@@ -11914,8 +11914,9 @@ a:hover {
   text-decoration: underline;
 }
 
-.toggle-like-btn {
-  color: #f54500;
+.toggle-like-btn .bi-heart-fill,
+.toggle-like-btn .bi-heart {
+  color: #e83e8c;
 }
 
 h1, .h1 {

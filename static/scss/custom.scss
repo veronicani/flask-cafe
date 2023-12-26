@@ -74,9 +74,9 @@ a:hover {
   text-decoration: underline;
 }
 //TODO: button turns to red on click
-//TODO: make heart red instead of all text
-.toggle-like-btn {
-  color: $red;
+.toggle-like-btn .bi-heart-fill, 
+.toggle-like-btn .bi-heart {
+  color: $pink;
 }
 
 //Typography
@@ -136,4 +136,4 @@ h1 {
 
 //Cafe Detail
 //TODO: move like button to be inline with h1 
-
+//TODO: hot chocolate should be different color
