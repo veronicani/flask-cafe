@@ -1,7 +1,7 @@
 """Forms for Flask Cafe."""
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, TextAreaField
+from wtforms import StringField, SelectField, TextAreaField, PasswordField
 from wtforms.validators import InputRequired, Length, URL, Optional, Email
 
 
@@ -66,7 +66,7 @@ class SignupForm(FlaskForm):
         validators=[InputRequired(), Email(), Length(max=50)],
     )
 
-    password = StringField(
+    password = PasswordField(
         "Password",
         validators=[InputRequired(), Length(min=6, max=20)],
     )
@@ -85,7 +85,7 @@ class LoginForm(FlaskForm):
         validators=[InputRequired()],
     )
 
-    password = StringField(
+    password = PasswordField(
         "Password",
         validators=[InputRequired()],
     )
