@@ -16,7 +16,6 @@
       <h1>{{ cafe.name }}</h1>
       <!-- Anon Like Button -->
       {% if not g.user %}
-      <!-- TODO: move the heart to be it's own <i> so can style separately -->
       <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary bi bi-heart" data-bs-toggle="tooltip"
         data-bs-placement="right" data-bs-original-title="Signup or login to like!" href="{{ url_for('login') }}"
         aria-label="Like"> Like</a>
