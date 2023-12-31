@@ -9,6 +9,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, Cafe, City, User, Like, Specialty
+from models import DEFAULT_CAFE_IMAGE_URL, DEFAULT_USER_IMAGE_URL
 from forms import CafeForm, SignupForm, LoginForm, ProfileEditForm, \
     CSRFProtectForm
 
@@ -194,13 +195,16 @@ def edit_cafe(cafe_id):
 
         cafe = Cafe.query.get_or_404(cafe_id)
         form = CafeForm(obj=cafe)
+        # hide the default image url from form field when editing
+        if form.image_url.data == DEFAULT_CAFE_IMAGE_URL:
+            form.image_url.data = ''
 
         form.city_code.choices = City.get_choices_cities()
 
         if form.validate_on_submit():
-            # NOTE: populate_obj will override db info even if a field is blank
-            # does not do image_url = form.image_url.data or None
+            form.image_url.data = form.image_url.data or DEFAULT_CAFE_IMAGE_URL
             form.populate_obj(cafe)
+
             db.session.commit()
             flash(f'{cafe.name} edited!', 'success')
 
@@ -217,6 +221,8 @@ def edit_cafe(cafe_id):
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
+# TODO: allow admins of cafe to add a specialty
+    
 
 @app.route('/cafes/<int:cafe_id>/delete', methods=["GET", "POST"])
 def delete_cafe(cafe_id):
@@ -390,9 +396,13 @@ def edit_profile():
     if g.user:
 
         form = ProfileEditForm(obj=g.user)
+        # hide the default image url from form field when editing
+        if form.image_url.data == DEFAULT_USER_IMAGE_URL:
+            form.image_url.data = ''
 
         if form.validate_on_submit():
-
+            
+            form.image_url.data = form.image_url.data or DEFAULT_USER_IMAGE_URL
             form.populate_obj(g.user)
             db.session.commit()
 
@@ -494,3 +504,4 @@ def remove_like():
     else:
 
         return jsonify({"error": "Not logged in"})
+
