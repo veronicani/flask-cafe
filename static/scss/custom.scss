@@ -24,7 +24,7 @@ $green:   #22b24c !default;
 $teal:    #20c997 !default;
 $cyan:    #369 !default;
 
-$primary:       #3DAFB7 !default;
+$primary:       #3DAFB7;
 $secondary:     $gray-500 !default;
 $success:       $green !default;
 $info:          $cyan !default;
@@ -43,37 +43,34 @@ $headings-font-family: "Noto Sans", "Arial Narrow Bold", sans-serif;
 @import "../node_modules/bootstrap/scss/_variables";
 
 //Links
-$link-color:                              $primary;
-$link-decoration:                         underline;
-$link-shade-percentage:                   20%;
-$link-hover-color:                        shift-color($link-color, $link-shade-percentage);
+// $link-color:                              $primary;
+$link-decoration:                         none;
+// $link-shade-percentage:                   20%;
+// $link-hover-color:                        shift-color($link-color, $link-shade-percentage);
 $link-hover-decoration:                   underline;
 
-// Bootswatch + Bootstrap Imports
+$btn-shade-percentage:                    20%;
+
+
+//Bootswatch + Bootstrap Imports
 @import "../node_modules/bootswatch/dist/journal/variables";
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/bootswatch/dist/journal/bootswatch";
 
 //Utils
+.btn:hover {
+  color: $white;
+}
+
 .btn-primary {
   color: $white;
-  border: none;
 }
 
 .btn-primary:hover {
-  color: $primary;
-  background-color: $white;
+  background-color: shift-color($primary, $btn-shade-percentage);
+  border-color: shift-color($primary, $btn-shade-percentage);
 }
 
-a {
-  text-decoration: none;
-}
-
-a:hover {
-  color: $link-hover-color;
-  text-decoration: underline;
-}
-//TODO: button turns to red on click
 .toggle-like-btn .bi-heart-fill, 
 .toggle-like-btn .bi-heart {
   color: $pink;
