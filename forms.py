@@ -38,6 +38,33 @@ class CafeForm(FlaskForm):
     )
 
 
+class SpecialtyForm(FlaskForm):
+    """Form for adding/editing a cafe specialty."""
+
+    name = StringField(
+        "Name",
+        validators=[InputRequired(), Length(min=1, max=30)],
+    )
+
+    type = SelectField(
+        "Type",
+        choices=[('beverage', 'Beverage'),
+                 ('dessert', 'Dessert'),
+                 ('course', 'Course'),
+                 ('side', 'Side')],
+    )
+
+    description = TextAreaField(
+        "Description",
+        validators=[Optional()],
+    )
+
+    image_url = StringField(
+        "Image",
+        validators=[Optional(), URL()],
+    )
+
+
 class SignupForm(FlaskForm):
     """Form for user signup."""
 
