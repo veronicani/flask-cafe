@@ -222,14 +222,13 @@ def edit_cafe(cafe_id):
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
-# TODO: allow admins of cafe to add a specialty
 
-
-@app.route('/cafes/<int:cafe_id>/add-specialty', methods=["GET", "POST"])
+@app.route('/cafes/<int:cafe_id>/specialties', methods=["GET", "POST"])
 def add_specialty(cafe_id):
     """ GET: Shows form for adding a specialty to a cafe.
-    POST: Handle adding a cafe and redirects to cafe's detail page on
+    POST: Handle adding a specialty and redirects to cafe's detail page on
     success (flash 'SPECIALTY added'). Show form again on failure.
+    
     If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
