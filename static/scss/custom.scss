@@ -110,21 +110,24 @@ $btn-shade-percentage:                    20%;
 
 //Utils
 
-//Pattern matched to ref below from scss/buttons -- 
-// @each $color, $value in $theme-colors {
-//   .btn-outline-#{$color} {
-//     @include button-outline-variant($value);
-//   }
-// }
+//Pattern matched to lines 121-152 from ~bootstrap/scss/buttons
 @each $color, $value in $theme-colors {
   .btn-outline-#{$color}:hover {
-    color: $white;
+    @if $color == "light" {
+      color: $primary;
+    } @else {
+      color: $white;
+    }
   }
 
   // Something in @import "../node_modules/bootstrap/scss/buttons" has higher
   //specificity than just .btn:active, so need to use 2 classes
   .btn.btn-outline-#{$color}:active {
-    color: $white;
+    @if $color == "light" {
+      color: $primary;
+    } @else {
+      color: $white;
+    }
     background-color: shift-color($value, $btn-shade-percentage);
   }
 
