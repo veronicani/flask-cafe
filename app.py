@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from models import db, connect_db, Cafe, City, User, Like, Specialty
 from models import DEFAULT_CAFE_IMAGE_URL, DEFAULT_USER_IMAGE_URL
 from forms import CafeForm, SignupForm, LoginForm, ProfileEditForm, \
-    CSRFProtectForm
+    CSRFProtectForm, SpecialtyForm
 
 load_dotenv()
 
@@ -126,7 +126,7 @@ def cafe_detail(cafe_id):
 @app.route('/cafes/add', methods=["GET", "POST"])
 def add_cafe():
     """ GET: Shows form for adding a cafe.
-    
+
     POST: Handle adding a cafe and redirects to new cafe's detail page on
     success (flash 'CAFENAME added'). Show form again on failure.
 
@@ -162,6 +162,7 @@ def add_cafe():
             #             city_code=form.city_code.data,
             #             image_url=form.image_url.data or None)
             db.session.add(cafe)
+            # TODO: prevent duplicate cafe name + address from being added
             db.session.commit()
 
             flash(f'{cafe.name} added!', 'success')
@@ -222,7 +223,54 @@ def edit_cafe(cafe_id):
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
 # TODO: allow admins of cafe to add a specialty
-    
+
+
+@app.route('/cafes/<int:cafe_id>/add-specialty', methods=["GET", "POST"])
+def add_specialty(cafe_id):
+    """ GET: Shows form for adding a specialty to a cafe.
+    POST: Handle adding a cafe and redirects to cafe's detail page on
+    success (flash 'SPECIALTY added'). Show form again on failure.
+    If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
+    """
+    if not g.user:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
+
+    elif g.user.admin:
+
+        cafe = Cafe.query.get_or_404(cafe_id)
+        form = SpecialtyForm()
+
+        if form.validate_on_submit():
+
+            data = {k: v or None for k, v in form.data.items() if k !=
+                    "csrf_token"}
+            # print("specialty data: ", data)
+            specialty = Specialty(cafe_id=cafe_id, **data)
+            db.session.add(specialty)
+
+            try:
+                db.session.commit()
+
+            except IntegrityError:
+                db.session.rollback()
+
+                flash('Specialty already exists.', 'danger')
+                return render_template('cafe/add-specialty-form.html', form=form)
+
+            return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+        else:
+            return render_template(
+                'cafe/add-specialty-form.html',
+                form=form,
+            )
+
+    else:
+        flash(ADMIN_ONLY_MSG, 'danger')
+        return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
 
 @app.route('/cafes/<int:cafe_id>/delete', methods=["GET", "POST"])
 def delete_cafe(cafe_id):
@@ -311,6 +359,7 @@ def signup():
         # NOTE: do not need to add_user_to_g b/c the page will redirect
         # which makes a request -- add_user_to_g will run before request
         # add_user_to_g()
+        # FIXME: flash msg does not show up
         flash('You are signed up and logged in.', 'success')
         return redirect(url_for('cafe_list'))
 
@@ -338,7 +387,7 @@ def login():
 
         if user:
             do_login(user)
-
+            # FIXME: flash msg does not show up
             flash(f'Hello, {user.username}', 'success')
             return redirect(url_for('cafe_list'))
 
@@ -401,7 +450,7 @@ def edit_profile():
             form.image_url.data = ''
 
         if form.validate_on_submit():
-            
+
             form.image_url.data = form.image_url.data or DEFAULT_USER_IMAGE_URL
             form.populate_obj(g.user)
             db.session.commit()
@@ -431,7 +480,7 @@ def check_if_like():
 
     If not logged in, return JSON: {"error": "Not logged in"}
     """
-    
+
     if g.user:
 
         cafe_id = int(request.args["cafe_id"])
@@ -504,4 +553,3 @@ def remove_like():
     else:
 
         return jsonify({"error": "Not logged in"})
-
