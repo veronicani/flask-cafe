@@ -10,7 +10,8 @@ const BASE_API_URL = "http://localhost:5001/api/"
  */
 //enable Tooltips
 const $tooltipTriggerList = $('[data-bs-toggle="tooltip"]')
-const tooltipList = [...$tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+const tooltipList = [...$tooltipTriggerList].map(
+  tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 /******************************************************************************
  * DOM elements
  */
@@ -73,11 +74,11 @@ async function handleLikeClick(evt) {
   if (cafeIsLiked) {
     await toggleLike(cafeId, "unlike");
     $toggleLikeBtn
-    .html('<i class="bi bi-heart"></i> Like');
+      .html('<i class="bi bi-heart"></i> Like');
   } else {
     await toggleLike(cafeId, "like");
     $toggleLikeBtn
-    .html('<i class="bi bi-heart-fill"></i>');
+      .html('<i class="bi bi-heart-fill"></i>');
   }
 }
 
