@@ -113,6 +113,10 @@ class Specialty(db.Model):
 
     __tablename__ = 'specialties'
 
+    __table_args__ = (
+       db.UniqueConstraint('name', 'cafe_id'),
+    )
+
     id = db.Column(
         db.Integer,
         primary_key=True,
