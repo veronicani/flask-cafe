@@ -256,13 +256,64 @@ def add_specialty(cafe_id):
                 db.session.rollback()
 
                 flash('Specialty already exists.', 'danger')
-                return render_template('cafe/add-specialty-form.html', form=form)
+                return render_template(
+                    'cafe/add-specialty-form.html', form=form)
 
+            flash(f"Added '{specialty.name}'.", 'success')
             return redirect(url_for('cafe_detail', cafe_id=cafe_id))
 
         else:
             return render_template(
                 'cafe/add-specialty-form.html',
+                form=form,
+            )
+
+    else:
+        flash(ADMIN_ONLY_MSG, 'danger')
+        return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+
+@app.route('/cafes/<int:cafe_id>/specialties/<int:specialty_id>',
+           methods=["GET", "POST"])
+def edit_specialty(cafe_id, specialty_id):
+    """ GET: Shows form for editing a specialty to a cafe.
+    POST: Handle editing a specialty and redirects to cafe's detail page on
+    success (flash 'SPECIALTY added'). Show form again on failure.
+    
+    If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
+    If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
+    """
+
+    if not g.user:
+        flash(NOT_LOGGED_IN_MSG, 'danger')
+        return redirect(url_for('login'))
+
+    elif g.user.admin:
+
+        cafe = Cafe.query.get_or_404(cafe_id)
+        specialty = Specialty.query.get_or_404(specialty_id)
+        
+        form = SpecialtyForm(obj=specialty)
+
+        if form.validate_on_submit():
+
+            form.populate_obj(specialty)
+
+            try:
+                db.session.commit()
+
+            except IntegrityError:
+                db.session.rollback()
+
+                flash('Specialty already exists.', 'danger')
+                return render_template('cafe/edit-specialty-form.html', form=form)
+
+            flash(f"Edited '{specialty.name}'.", 'success')
+            return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+        else:
+            return render_template(
+                'cafe/edit-specialty-form.html',
                 form=form,
             )
 
