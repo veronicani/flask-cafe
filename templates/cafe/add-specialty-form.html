@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %} Add Specialty {% endblock %}
+
+{% block content %}
+
+  <h1 class="mb-4">Add Specialty</h1>
+
+  <form method="POST">
+    {% include '_form.html' %}
+    <button class= "btn btn-primary" type="submit">Add</button>
+  </form>
+
+{% endblock %}
