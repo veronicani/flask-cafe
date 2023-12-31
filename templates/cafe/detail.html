@@ -44,8 +44,13 @@
     <!-- Specialties -->
     {% if specialties %}
     <ul id="cafe-specialties" class="list-group mb-2">
-      <li class="list-group-item list-group-item-action active">
-        <h3 class="m-1">Cafe Specialties</h2>
+      <li class="list-group-item list-group-item-action d-flex w-100 align-items-center justify-content-between active">
+        <h3 class="my-1">Cafe Specialties</h2>
+        <!-- Add Specialty -->
+        {% if g.user.admin %}
+        <a class="btn btn-outline-light" href="/cafes/{{ cafe.id }}/specialties">
+        Add </a>
+        {% endif %}
       </li>
 
       {% for s in specialties %}
