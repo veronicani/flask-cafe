@@ -11,9 +11,9 @@
   </div>
   <!-- Cafe Details -->
   <div id="cafe-details" class="col-12 col-sm-10 col-md-8">
-    <div>
+    <div class=" mb-3 d-flex w-100 align-items-center justify-content-between">
       <!-- Cafe Name -->
-      <h1>{{ cafe.name }}</h1>
+      <h1 class="m-0">{{ cafe.name }}</h1>
       <!-- Anon Like Button -->
       {% if not g.user %}
       <a data-cafe-id="{{ cafe.id }}" class="btn btn-secondary bi bi-heart" data-bs-toggle="tooltip"
