@@ -45,7 +45,7 @@
     {% if specialties %}
     <ul id="cafe-specialties" class="list-group mb-2">
       <li class="list-group-item list-group-item-action active">
-        <h3>Cafe Specialties</h2>
+        <h3 class="m-1">Cafe Specialties</h2>
       </li>
 
       {% for s in specialties %}
@@ -53,6 +53,8 @@
         <div class="d-flex w-100 justify-content-between">
           <h5 class="mb-1">{{ s.name }}</h5>
         </div>
+
+        {% if s.description %}
         <div class="d-flex w-100 justify-content-between">
           <p class="mb-1">{{ s.description }}</p>
 
@@ -61,6 +63,7 @@
           {% endif %}
 
         </div>
+        {% endif %}
       </li>
       {% endfor %}
 
