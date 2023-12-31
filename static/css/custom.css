@@ -10601,4 +10601,8 @@ h1, .h1 {
   font-style: italic;
 }
 
+#cafe-specialties h5, #cafe-specialties .h5 {
+  color: #3DAFB7;
+}
+
 /*# sourceMappingURL=custom.css.map */
