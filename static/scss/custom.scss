@@ -3,8 +3,10 @@
 //VARIABLE OVERRIDES
 
 //Color System
+$gray-500: #adb5bd !default;
 
 $primary:       #3DAFB7;
+$secondary:       $gray-500;
 
 //Fonts
 $web-font-path: "https://fonts.googleapis.com/css2?family=Londrina+Solid&family=Noto+Sans:wght@400;700&display=swap";
