@@ -48,6 +48,10 @@ class Cafe(db.Model):
 
     __tablename__ = 'cafes'
 
+    __table_args__ = (
+       db.UniqueConstraint('name', 'address', 'city_code'),
+    )
+
     id = db.Column(
         db.Integer,
         primary_key=True,

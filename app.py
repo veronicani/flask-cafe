@@ -162,8 +162,17 @@ def add_cafe():
             #             city_code=form.city_code.data,
             #             image_url=form.image_url.data or None)
             db.session.add(cafe)
-            # TODO: prevent duplicate cafe name + address from being added
-            db.session.commit()
+
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
+                flash('Cafe with same name and location exists.', 'danger')    
+                return render_template(
+                    'cafe/add-form.html',
+                    form=form,
+                )
 
             flash(f'{cafe.name} added!', 'success')
             return redirect(url_for('cafe_detail', cafe_id=cafe.id))
