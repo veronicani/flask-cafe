@@ -215,9 +215,18 @@ def edit_cafe(cafe_id):
             form.image_url.data = form.image_url.data or DEFAULT_CAFE_IMAGE_URL
             form.populate_obj(cafe)
 
-            db.session.commit()
-            flash(f'{cafe.name} edited!', 'success')
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
+                flash('Cafe with same name and location exists.', 'danger')    
+                return render_template(
+                    'cafe/add-form.html',
+                    form=form,
+                )
+
+            flash(f'{cafe.name} edited!', 'success')
             return redirect(url_for('cafe_detail', cafe_id=cafe.id))
 
         else:
