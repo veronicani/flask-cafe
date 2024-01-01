@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_ECHO'] = True
-# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
 connect_db(app)
@@ -36,9 +36,9 @@ def page_not_found(e):
     """Return a custom 404 page."""
     return render_template('404.html'), 404
 
-
 #######################################
 # auth & auth routes
+
 
 CURR_USER_KEY = "curr_user"
 NOT_LOGGED_IN_MSG = "You are not logged in."
@@ -75,6 +75,11 @@ def do_logout():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
 
+
+def handle_not_logged_in():
+    """Flashes a 'not logged in' message and redirects user to login page."""
+    flash(NOT_LOGGED_IN_MSG, 'danger')
+    return redirect(url_for('login'))
 
 #######################################
 # homepage
@@ -130,6 +135,7 @@ def add_cafe():
     POST: Handle adding a cafe and redirects to new cafe's detail page on
     success (flash 'CAFENAME added'). Show form again on failure.
 
+    If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
 
@@ -137,108 +143,106 @@ def add_cafe():
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
 
-    elif g.user.admin:
+    elif not g.user.admin:
+        flash(ADMIN_ONLY_MSG, 'danger')
+        return redirect(url_for('cafe_list'))
 
-        form = CafeForm()
+    form = CafeForm()
 
-        form.city_code.choices = City.get_choices_cities()
+    form.city_code.choices = City.get_choices_cities()
 
-        if form.validate_on_submit():
-            # name = form.name.data
-            # description = form.description.data
-            # url = form.url.data
-            # address = form.address.data
-            # city_code = form.city_code.data
-            # image_url = form.image_url.data or None
+    if form.validate_on_submit():
+        # name = form.name.data
+        # description = form.description.data
+        # url = form.url.data
+        # address = form.address.data
+        # city_code = form.city_code.data
+        # image_url = form.image_url.data or None
 
-            data = {k: v or None for k, v in form.data.items() if k !=
-                    "csrf_token"}
+        data = {k: v or None for k, v in form.data.items() if k !=
+                "csrf_token"}
 
-            cafe = Cafe(**data)
-            # cafe = Cafe(name=form.name.data,
-            #             description=form.description.data,
-            #             url=form.url.data,
-            #             address=form.address.data,
-            #             city_code=form.city_code.data,
-            #             image_url=form.image_url.data or None)
-            db.session.add(cafe)
+        cafe = Cafe(**data)
+        # cafe = Cafe(name=form.name.data,
+        #             description=form.description.data,
+        #             url=form.url.data,
+        #             address=form.address.data,
+        #             city_code=form.city_code.data,
+        #             image_url=form.image_url.data or None)
+        db.session.add(cafe)
 
-            try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
 
-                flash('Cafe with same name and location exists.', 'danger')    
-                return render_template(
-                    'cafe/add-form.html',
-                    form=form,
-                )
-
-            flash(f'{cafe.name} added!', 'success')
-            return redirect(url_for('cafe_detail', cafe_id=cafe.id))
-
-        else:
-
+            flash('Cafe with same name and location exists.', 'danger')    
             return render_template(
                 'cafe/add-form.html',
                 form=form,
             )
 
-    else:
-        flash(ADMIN_ONLY_MSG, 'danger')
-        return redirect(url_for('cafe_list'))
+        flash(f'{cafe.name} added!', 'success')
+        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
 
+    else:
+
+        return render_template(
+            'cafe/add-form.html',
+            form=form,
+        )
+        
 
 @app.route('/cafes/<int:cafe_id>/edit', methods=["GET", "POST"])
 def edit_cafe(cafe_id):
     """ GET: Shows form for editing a cafe.
     POST: Handle editing a cafe and redirects to cafe's detail page on
     success (flash 'CAFENAME edited'). Show form again on failure.
+
     If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
+
     if not g.user:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
 
-    elif g.user.admin:
-
-        cafe = Cafe.query.get_or_404(cafe_id)
-        form = CafeForm(obj=cafe)
-        # hide the default image url from form field when editing
-        if form.image_url.data == DEFAULT_CAFE_IMAGE_URL:
-            form.image_url.data = ''
-
-        form.city_code.choices = City.get_choices_cities()
-
-        if form.validate_on_submit():
-            form.image_url.data = form.image_url.data or DEFAULT_CAFE_IMAGE_URL
-            form.populate_obj(cafe)
-
-            try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-
-                flash('Cafe with same name and location exists.', 'danger')    
-                return render_template(
-                    'cafe/add-form.html',
-                    form=form,
-                )
-
-            flash(f'{cafe.name} edited!', 'success')
-            return redirect(url_for('cafe_detail', cafe_id=cafe.id))
-
-        else:
-            return render_template(
-                'cafe/edit-form.html',
-                form=form,
-                cafe=cafe,
-            )
-
-    else:
+    elif not g.user.admin:
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+    cafe = Cafe.query.get_or_404(cafe_id)
+    form = CafeForm(obj=cafe)
+    # hide the default image url from form field when editing
+    if form.image_url.data == DEFAULT_CAFE_IMAGE_URL:
+        form.image_url.data = ''
+
+    form.city_code.choices = City.get_choices_cities()
+
+    if form.validate_on_submit():
+        form.image_url.data = form.image_url.data or DEFAULT_CAFE_IMAGE_URL
+        form.populate_obj(cafe)
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+
+            flash('Cafe with same name and location exists.', 'danger')    
+            return render_template(
+                'cafe/add-form.html',
+                form=form,
+            )
+
+        flash(f'{cafe.name} edited!', 'success')
+        return redirect(url_for('cafe_detail', cafe_id=cafe.id))
+
+    else:
+        return render_template(
+            'cafe/edit-form.html',
+            form=form,
+            cafe=cafe,
+        )
 
 
 @app.route('/cafes/<int:cafe_id>/specialties', methods=["GET", "POST"])
@@ -250,45 +254,44 @@ def add_specialty(cafe_id):
     If not admin, redirect to cafe details page with flashed ADMIN_ONLY_MSG.
     If not logged in, redirect to login form with flashed NOT_LOGGED_IN_MSG.
     """
+
     if not g.user:
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
 
-    elif g.user.admin:
-
-        cafe = Cafe.query.get_or_404(cafe_id)
-        form = SpecialtyForm()
-
-        if form.validate_on_submit():
-
-            data = {k: v or None for k, v in form.data.items() if k !=
-                    "csrf_token"}
-            # print("specialty data: ", data)
-            specialty = Specialty(cafe_id=cafe_id, **data)
-            db.session.add(specialty)
-
-            try:
-                db.session.commit()
-
-            except IntegrityError:
-                db.session.rollback()
-
-                flash('Specialty already exists.', 'danger')
-                return render_template(
-                    'cafe/add-specialty-form.html', form=form)
-
-            flash(f"Added '{specialty.name}'.", 'success')
-            return redirect(url_for('cafe_detail', cafe_id=cafe_id))
-
-        else:
-            return render_template(
-                'cafe/add-specialty-form.html',
-                form=form,
-            )
-
-    else:
+    elif not g.user.admin:
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+    cafe = Cafe.query.get_or_404(cafe_id)
+    form = SpecialtyForm()
+
+    if form.validate_on_submit():
+
+        data = {k: v or None for k, v in form.data.items() if k !=
+                "csrf_token"}
+        # print("specialty data: ", data)
+        specialty = Specialty(cafe_id=cafe_id, **data)
+        db.session.add(specialty)
+
+        try:
+            db.session.commit()
+
+        except IntegrityError:
+            db.session.rollback()
+
+            flash('Specialty already exists.', 'danger')
+            return render_template(
+                'cafe/add-specialty-form.html', form=form)
+
+        flash(f"Added '{specialty.name}'.", 'success')
+        return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+    else:
+        return render_template(
+            'cafe/add-specialty-form.html',
+            form=form,
+        )
 
 
 @app.route('/cafes/<int:cafe_id>/specialties/<int:specialty_id>',
@@ -306,38 +309,36 @@ def edit_specialty(cafe_id, specialty_id):
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
 
-    elif g.user.admin:
-
-        cafe = Cafe.query.get_or_404(cafe_id)
-        specialty = Specialty.query.get_or_404(specialty_id)
-        
-        form = SpecialtyForm(obj=specialty)
-
-        if form.validate_on_submit():
-
-            form.populate_obj(specialty)
-
-            try:
-                db.session.commit()
-
-            except IntegrityError:
-                db.session.rollback()
-
-                flash('Specialty already exists.', 'danger')
-                return render_template('cafe/edit-specialty-form.html', form=form)
-
-            flash(f"Edited '{specialty.name}'.", 'success')
-            return redirect(url_for('cafe_detail', cafe_id=cafe_id))
-
-        else:
-            return render_template(
-                'cafe/edit-specialty-form.html',
-                form=form,
-            )
-
-    else:
+    elif not g.user.admin:
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+    cafe = Cafe.query.get_or_404(cafe_id)
+    specialty = Specialty.query.get_or_404(specialty_id)
+    
+    form = SpecialtyForm(obj=specialty)
+
+    if form.validate_on_submit():
+
+        form.populate_obj(specialty)
+
+        try:
+            db.session.commit()
+
+        except IntegrityError:
+            db.session.rollback()
+
+            flash('Specialty already exists.', 'danger')
+            return render_template('cafe/edit-specialty-form.html', form=form)
+
+        flash(f"Edited '{specialty.name}'.", 'success')
+        return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+    else:
+        return render_template(
+            'cafe/edit-specialty-form.html',
+            form=form,
+        )
 
 
 @app.route('/cafes/<int:cafe_id>/delete', methods=["GET", "POST"])
@@ -353,29 +354,27 @@ def delete_cafe(cafe_id):
         flash(NOT_LOGGED_IN_MSG, 'danger')
         return redirect(url_for('login'))
 
-    elif g.user.admin:
-
-        cafe = Cafe.query.get_or_404(cafe_id)
-
-        if g.csrf_form.validate_on_submit():
-
-            Like.query.filter(Like.liked_cafes == cafe_id).delete()
-            db.session.delete(cafe)
-
-            db.session.commit()
-
-            flash(f"Deleted '{cafe.name}' 🪦 R.I.P", 'warning')
-            return redirect(url_for('cafe_list'))
-
-        else:
-            return render_template(
-                'cafe/delete-confirm.html',
-                cafe=cafe,
-            )
-
-    else:
+    elif not g.user.admin:
         flash(ADMIN_ONLY_MSG, 'danger')
         return redirect(url_for('cafe_detail', cafe_id=cafe_id))
+
+    cafe = Cafe.query.get_or_404(cafe_id)
+
+    if g.csrf_form.validate_on_submit():
+
+        Like.query.filter(Like.liked_cafes == cafe_id).delete()
+        db.session.delete(cafe)
+
+        db.session.commit()
+
+        flash(f"Deleted '{cafe.name}' 🪦 R.I.P", 'warning')
+        return redirect(url_for('cafe_list'))
+
+    else:
+        return render_template(
+            'cafe/delete-confirm.html',
+            cafe=cafe,
+        )
 
 #######################################
 # user signup/login/logout
@@ -427,7 +426,7 @@ def signup():
         # NOTE: do not need to add_user_to_g b/c the page will redirect
         # which makes a request -- add_user_to_g will run before request
         # add_user_to_g()
-        # FIXME: flash msg does not show up
+        
         flash('You are signed up and logged in.', 'success')
         return redirect(url_for('cafe_list'))
 
@@ -455,7 +454,7 @@ def login():
 
         if user:
             do_login(user)
-            # FIXME: flash msg does not show up
+        
             flash(f'Hello, {user.username}', 'success')
             return redirect(url_for('cafe_list'))
 
